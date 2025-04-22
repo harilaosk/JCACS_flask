@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>Define Activities</h1>
+
+    <!-- Form to Add New Activity -->
     <form method="POST" action="/add_activity" class="mb-3">
         <div class="row">
             <div class="col-md-4">
@@ -30,22 +32,57 @@
             </div>
         </div>
     </form>
+
+    <!-- Table to Display and Edit Activities -->
     <h3>Defined Activities</h3>
-    <ul class="list-group mb-3">
-        {% for name, activity in activities.items() %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <strong>{{ name }}</strong>: {{ activity }}
-            </div>
-            <div>
-                <form method="POST" action="/delete_activity/{{ name }}" style="display: inline;">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                </form>
-                <form method="POST" action="/add_activity_to_sequence/{{ name }}" style="display: inline;">
-                    <button type="submit" class="btn btn-success btn-sm">Add to Sequence</button>
-                </form>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Activity Name</th>
+                <th>Min Force</th>
+                <th>Max Force</th>
+                <th>Hold Time Min</th>
+                <th>Hold Time Max</th>
+                <th>Start Angle</th>
+                <th>End Angle</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for name, activity in activities.items() %}
+            <tr>
+                <td>{{ name }}</td>
+                {% for key, value in activity.items() %}
+                <td contenteditable="true" 
+                    onblur="updateActivity('{{ name }}', '{{ key }}', this.textContent)">
+                    {{ value }}
+                </td>
+                {% endfor %}
+                <td>
+                    <form method="POST" action="/delete_activity/{{ name }}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    <form method="POST" action="/add_activity_to_sequence/{{ name }}" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Add to Sequence</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function updateActivity(activityName, key, value) {
+            fetch('/update_activity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ activity_name: activityName, key: key, value: value }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    alert("Failed to update activity. Please try again!");
+                }
+            });
+        }
+    </script>
 {% endblock %}

@@ -110,6 +110,17 @@ def add_activity():
     }
     return redirect(url_for('activities_page'))
 
+@app.route('/update_activity', methods=['POST'])
+def update_activity():
+    activity_name = request.form.get('activity_name')
+    key = request.form.get('key')
+    value = request.form.get('value')
+
+    if activity_name in activities and key in activities[activity_name]:
+        activities[activity_name][key] = value
+        return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Invalid activity or key"}), 400
+
 @app.route('/delete_activity/<string:activity_name>', methods=['POST'])
 def delete_activity(activity_name):
     if activity_name in activities:
