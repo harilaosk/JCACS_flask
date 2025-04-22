@@ -22,7 +22,7 @@
 .simple-dark {
     --nav-bg: #343a40;
     --text-color: #ffffff;
-    --btn-border: #ffffff;
+    --btn-border: grey; /* Change outline colour to grey from #ffffff */
     --btn-active-bg: #495057;
     --btn-bg: #212529;
     --main-bg: #212529;
@@ -143,4 +143,9 @@ button.active, .btn.active {
 /* Button Hover (add a subtle effect) */
 button:hover, .btn:hover {
     opacity: 0.9;
+}
+
+/* Unrounded buton groups*/
+.btn-group-unrounded {
+border-radius: 0;
 }

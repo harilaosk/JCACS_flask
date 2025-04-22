@@ -86,6 +86,7 @@ def update_count(index):
     if 0 <= index < len(sequence):
         new_count = request.form.get('count', 1)
         sequence[index]['count'] = int(new_count)
+    save_cache()
     return redirect(url_for('index'))
 
 @app.route('/run_sequence', methods=['POST'])
@@ -116,13 +117,16 @@ def activities_page():
 
 @app.route('/add_activity', methods=['POST'])
 def add_activity():
-    activity_name = request.form.get('activity_name')
-    min_force = request.form.get('min_force')
-    max_force = request.form.get('max_force')
-    hold_time_min = request.form.get('hold_time_min')
-    hold_time_max = request.form.get('hold_time_max')
-    start_angle = request.form.get('start_angle')
-    end_angle = request.form.get('end_angle')
+    activity_name = request.form.get('activity_name').strip()
+    try:
+        min_force = float(request.form.get('min_force').strip())
+        max_force = float(request.form.get('max_force').strip())
+        hold_time_min = float(request.form.get('hold_time_min').strip())
+        hold_time_max = float(request.form.get('hold_time_max').strip())
+        start_angle = float(request.form.get('start_angle').strip())
+        end_angle = float(request.form.get('end_angle').strip())
+    except ValueError:
+        return "All values must be valid numbers", 400
 
     # Store the activity as a dictionary
     activities[activity_name] = {
@@ -138,11 +142,15 @@ def add_activity():
 
 @app.route('/update_activity', methods=['POST'])
 def update_activity():
-    activity_name = request.form.get('activity_name')
-    key = request.form.get('key')
-    value = request.form.get('value')
+    activity_name = request.form.get('activity_name').strip()
+    key = request.form.get('key').strip()
+    value = request.form.get('value').strip()
 
     if activity_name in activities and key in activities[activity_name]:
+        try:
+            value = float(value)
+        except ValueError:
+            return jsonify({"success": False, "error": "Value must be a valid number"}), 400
         activities[activity_name][key] = value
         save_cache()
         return jsonify({"success": True})
@@ -174,8 +182,9 @@ def delete_activities():
 def add_activity_to_sequence(activity_name):
     if activity_name in activities:
         activity = activities[activity_name]
-        command = f"{activity['MIN_TARGET_FORCE']} {activity['MAX_TARGET_FORCE']} {activity['HOLD_TIME_MIN']} {activity['HOLD_TIME_MAX']} {activity['StartAngle']} {activity['EndAngle']}"
+        command = f"{float(activity['MIN_TARGET_FORCE'])} {float(activity['MAX_TARGET_FORCE'])} {float(activity['HOLD_TIME_MIN'])} {float(activity['HOLD_TIME_MAX'])} {float(activity['StartAngle'])} {float(activity['EndAngle'])}"
         sequence.append({'command': command, 'count': 1})  # Default count to 1
+    save_cache()
     return redirect(url_for('index'))
 
 @app.route('/export_activities', methods=['POST'])
@@ -234,6 +243,10 @@ def manual_control_page():
 @app.route('/debug_activities', methods=['GET'])
 def debug_activities():
     return jsonify(activities)
+
+@app.route('/debug_sequences', methods=['GET'])
+def debug_sequences():
+    return jsonify(sequence)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
