@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
 from flask_socketio import SocketIO
 import serial
 import time
 import json
 import os
+import csv
 
 # File paths for caching
 CACHE_FILE = 'cache.json'
@@ -154,6 +155,21 @@ def delete_activity(activity_name):
         save_cache()
     return redirect(url_for('activities_page'))
 
+@app.route('/delete_activities', methods=['POST'])
+def delete_activities():
+    data = request.get_json()  # Parse JSON payload
+    selected_activities = data.get('activities', [])
+    if not selected_activities:
+        return jsonify({"error": "No activities selected"}), 400
+
+    # Delete the selected activities
+    for activity_name in selected_activities:
+        if activity_name in activities:
+            del activities[activity_name]
+
+    save_cache()  # Save changes to the cache
+    return jsonify({"success": True, "message": "Selected activities deleted successfully"})
+
 @app.route('/add_activity_to_sequence/<string:activity_name>', methods=['POST'])
 def add_activity_to_sequence(activity_name):
     if activity_name in activities:
@@ -162,9 +178,62 @@ def add_activity_to_sequence(activity_name):
         sequence.append({'command': command, 'count': 1})  # Default count to 1
     return redirect(url_for('index'))
 
+@app.route('/export_activities', methods=['POST'])
+def export_activities():
+    data = request.get_json()  # Parse JSON payload
+    selected_activities = data.get('selected_activities', [])
+    if not selected_activities:
+        return "No activities selected", 400
+
+    # Create CSV data
+    csv_data = [["Activity Name", "MIN_TARGET_FORCE", "MAX_TARGET_FORCE", "HOLD_TIME_MIN", "HOLD_TIME_MAX", "StartAngle", "EndAngle"]]
+    for name in selected_activities:
+        if name in activities:
+            activity = activities[name]
+            csv_data.append([name] + list(activity.values()))
+
+    # Generate CSV response using csv.writer
+    def generate_csv():
+        from io import StringIO
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerows(csv_data)
+        return output.getvalue()
+
+    return Response(generate_csv(), mimetype='text/csv', headers={"Content-Disposition": "attachment;filename=activities.csv"})
+
+@app.route('/import_activities', methods=['POST'])
+def import_activities():
+    file = request.files.get('file')
+    if not file or not file.filename.endswith('.csv'):
+        return "Invalid file", 400
+
+    # Decode the file stream to text mode
+    file_stream = file.stream.read().decode('utf-8').splitlines()
+    csv_reader = csv.reader(file_stream)
+    next(csv_reader)  # Skip header row
+
+    for row in csv_reader:
+        if len(row) == 7:
+            name, min_force, max_force, hold_time_min, hold_time_max, start_angle, end_angle = row
+            activities[name] = {
+                "MIN_TARGET_FORCE": min_force,
+                "MAX_TARGET_FORCE": max_force,
+                "HOLD_TIME_MIN": hold_time_min,
+                "HOLD_TIME_MAX": hold_time_max,
+                "StartAngle": start_angle,
+                "EndAngle": end_angle
+            }
+    save_cache()
+    return redirect(url_for('activities_page'))
+
 @app.route('/manual_control_page')
 def manual_control_page():
     return render_template('manual_control.html')
+
+@app.route('/debug_activities', methods=['GET'])
+def debug_activities():
+    return jsonify(activities)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
