@@ -35,9 +35,10 @@
 
     <!-- Table to Display and Edit Activities -->
     <h3>Defined Activities</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr class="text-center">
                 <th>Activity Name</th>
                 <th>Min Force</th>
                 <th>Max Force</th>
@@ -51,14 +52,14 @@
         <tbody>
             {% for name, activity in activities.items() %}
             <tr>
-                <td>{{ name }}</td>
+                <td class="align-middle">{{ name }}</td>
                 {% for key, value in activity.items() %}
-                <td contenteditable="true" 
+                <td class="align-middle text-center" contenteditable="true"
                     onblur="updateActivity('{{ name }}', '{{ key }}', this.textContent)">
                     {{ value }}
                 </td>
                 {% endfor %}
-                <td>
+                <td class="align-middle text-center">
                     <form method="POST" action="/delete_activity/{{ name }}" style="display: inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
@@ -70,9 +71,16 @@
             {% endfor %}
         </tbody>
     </table>
-
+</div>
     <script>
         function updateActivity(activityName, key, value) {
+            // Validate that the value is a number
+            if (isNaN(value) || value.trim() === "") {
+                alert("Please enter a valid number.");
+                return;
+            }
+
+            // Send the update request
             fetch('/update_activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
