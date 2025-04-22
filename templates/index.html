@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Rig Control Interface</h1>
+    <form method="POST" action="/add_command" class="mb-3">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" name="command" class="form-control" placeholder="Enter command (e.g., 1 10 200 500 5 90)" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="count" class="form-control" placeholder="Count" min="1" value="1">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Add Command</button>
+            </div>
+        </div>
+    </form>
+
+    <h3>Sequence</h3>
+    <ul class="list-group mb-3">
+        {% for item in sequence %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Command:</strong> {{ item.command }}
+                <br>
+                <form method="POST" action="/update_count/{{ loop.index0 }}" class="d-inline">
+                    <strong>Count:</strong>
+                    <input type="number" name="count" value="{{ item.count }}" min="1" class="form-control d-inline-block" style="width: 80px;">
+                    <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                </form>
+            </div>
+            <form method="POST" action="/delete_command/{{ loop.index0 }}" style="margin-left: auto;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <form method="POST" action="/run_sequence" class="mb-3">
+        <button type="submit" class="btn btn-success">Run Sequence</button>
+        <button type="submit" formaction="/clear_sequence" class="btn btn-warning">Clear Sequence</button>
+    </form>
+{% endblock %}

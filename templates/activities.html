@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Define Activities</h1>
+    <form method="POST" action="/add_activity" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" name="activity_name" class="form-control" placeholder="Activity Name" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="min_force" class="form-control" placeholder="Min Force" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="max_force" class="form-control" placeholder="Max Force" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="hold_time_min" class="form-control" placeholder="Hold Time Min" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="hold_time_max" class="form-control" placeholder="Hold Time Max" required>
+            </div>
+            <div class="col-md-2 mt-2">
+                <input type="number" name="start_angle" class="form-control" placeholder="Start Angle" required>
+            </div>
+            <div class="col-md-2 mt-2">
+                <input type="number" name="end_angle" class="form-control" placeholder="End Angle" required>
+            </div>
+            <div class="col-md-2 mt-2">
+                <button type="submit" class="btn btn-primary">Add Activity</button>
+            </div>
+        </div>
+    </form>
+    <h3>Defined Activities</h3>
+    <ul class="list-group mb-3">
+        {% for name, activity in activities.items() %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ name }}</strong>: {{ activity }}
+            </div>
+            <div>
+                <form method="POST" action="/delete_activity/{{ name }}" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                <form method="POST" action="/add_activity_to_sequence/{{ name }}" style="display: inline;">
+                    <button type="submit" class="btn btn-success btn-sm">Add to Sequence</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

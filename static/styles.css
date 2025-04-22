@@ -1,0 +1,146 @@
+/* Global Variables for Themes */
+:root {
+    --nav-width: 250px;
+    --btn-border-thickness: 6px; /* Double the original thickness */
+}
+
+/* Simple Light Theme */
+.simple-light {
+    --nav-bg: #f8f9fa;
+    --text-color: #000;
+    --btn-border: #000;
+    --btn-active-bg: #d9d9d9;
+    --btn-bg: #ffffff;
+    --main-bg: #ffffff;
+    --content-box-bg: #ffffff;
+    --nav-btn-active-bg: #d9d9d9;
+    --nav-btn-border: #000;
+    --nav-btn-bg: #ffffff;
+}
+
+/* Simple Dark Theme */
+.simple-dark {
+    --nav-bg: #343a40;
+    --text-color: #ffffff;
+    --btn-border: #ffffff;
+    --btn-active-bg: #495057;
+    --btn-bg: #212529;
+    --main-bg: #212529;
+    --content-box-bg: #343a40;
+    --nav-btn-active-bg: #495057;
+    --nav-btn-border: #ffffff;
+    --nav-btn-bg: #212529;
+}
+
+/* Colourful Theme */
+.colourful {
+    --nav-bg: #c7d7e6; /* Blue */
+    --text-color: #221c41; /* Navy */
+    --btn-border: #f08590; /* Pink */
+    --btn-active-bg: #f8b88a; /* Orange */
+    --btn-bg: #c7d7e6; /* Blue for unselected buttons */
+    --main-bg: #f8b88a; /* Orange */
+    --content-box-bg: #c7d7e6; /* Blue */
+    --nav-btn-active-bg: #f8b88a; /* Orange */
+    --nav-btn-border: #f08590; /* Pink for unselected buttons */
+    --nav-btn-active-border: #221c41; /* Navy for selected buttons */
+}
+
+/* Global Styles */
+body {
+    color: var(--text-color);
+    background-color: var(--main-bg);
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation Pane */
+.theme-nav {
+    background-color: var(--nav-bg);
+    color: var(--text-color);
+    width: var(--nav-width);
+    height: 100vh; /* Constrain height to viewport */
+    overflow-y: auto; /* Enable scrolling when content overflows */
+    position: fixed;
+    padding: 20px;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: var(--btn-border) var(--nav-bg); /* For Firefox */
+}
+
+/* Custom Scrollbar for WebKit (Chrome, Safari, Edge) */
+.theme-nav::-webkit-scrollbar {
+    width: 8px;
+}
+
+.theme-nav::-webkit-scrollbar-thumb {
+    background-color: var(--btn-border);
+    border-radius: 4px;
+}
+
+.theme-nav::-webkit-scrollbar-track {
+    background-color: var(--nav-bg);
+}
+
+/* Navigation Buttons */
+.theme-nav .nav-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: var(--btn-border-thickness) solid var(--nav-btn-border);
+    border-radius: 5px;
+    background-color: var(--nav-btn-bg);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.theme-nav .nav-btn:hover {
+    opacity: 0.9;
+}
+
+.theme-nav .nav-btn.active {
+    background-color: var(--nav-btn-active-bg);
+    border-color: var(--nav-btn-active-border);
+    color: var(--text-color);
+}
+
+/* Main Content */
+.theme-main {
+    margin-left: var(--nav-width); /* Ensure main content is offset by nav width */
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+/* Content Boxes */
+.theme-main .content-box {
+    background-color: var(--content-box-bg);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+button, .btn {
+    border: var(--btn-border-thickness) solid var(--btn-border);
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+button.active, .btn.active {
+    background-color: var(--btn-active-bg);
+    color: var(--text-color);
+}
+
+/* Button Hover (add a subtle effect) */
+button:hover, .btn:hover {
+    opacity: 0.9;
+}

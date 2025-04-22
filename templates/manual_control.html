@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Manual Control</h1>
+    <form id="manual-control-form" class="mb-3">
+        <div class="row">
+            <div class="col-md-3">
+                <select name="direction" class="form-control">
+                    <option value="UP">Up</option>
+                    <option value="DOWN">Down</option>
+                    <option value="LEFT">Left</option>
+                    <option value="RIGHT">Right</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="steps" class="form-control" placeholder="Steps" min="1" required>
+            </div>
+            <div class="col-md-3">
+                <button type="button" id="manual-control-submit" class="btn btn-info">Send</button>
+            </div>
+        </div>
+    </form>
+    <div id="manual-control-response" class="alert alert-info d-none"></div>
+    <script>
+        document.getElementById("manual-control-submit").addEventListener("click", () => {
+            const form = document.getElementById("manual-control-form");
+            const formData = new FormData(form);
+            const direction = formData.get("direction");
+            const steps = formData.get("steps");
+            
+            fetch("/manual_control", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ direction, steps })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseDiv = document.getElementById("manual-control-response");
+                responseDiv.textContent = data.response;
+                responseDiv.classList.remove("d-none");
+            });
+        });
+    </script>
+{% endblock %}
