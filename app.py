@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_socketio import SocketIO
 import serial
 import time
+import json
+import os
+
+# File paths for caching
+CACHE_FILE = 'cache.json'
 
 # Initialize Flask app and SocketIO
 app = Flask(__name__)
@@ -14,8 +19,24 @@ BAUD_RATE = 115200
 
 # Initialize global variables
 arduino = None
-sequence = []  # Holds the sequence of commands (each command is a dict with 'command' and 'count')
-activities = {}  # Holds defined activities
+# Load cached data
+def load_cache():
+    global sequence, activities
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, 'r') as f:
+            data = json.load(f)
+            sequence = data.get('sequence', [])
+            activities = data.get('activities', {})
+    else:
+        sequence = []  # Holds the sequence of commands (each command is a dict with 'command' and 'count')
+        activities = {}  # Holds defined activities
+# Save data to cache
+def save_cache():
+    with open(CACHE_FILE, 'w') as f:
+        json.dump({'sequence': sequence, 'activities': activities}, f)
+
+# Load cache on startup
+load_cache()
 
 # Connect to Arduino
 def connect_to_arduino():
@@ -49,12 +70,14 @@ def add_command():
     command = request.form.get('command')
     count = request.form.get('count', 1)  # Default count to 1 if not specified
     sequence.append({'command': command, 'count': int(count)})
+    save_cache()
     return redirect(url_for('index'))
 
 @app.route('/delete_command/<int:index>', methods=['POST'])
 def delete_command(index):
     if 0 <= index < len(sequence):
         sequence.pop(index)
+        save_cache()
     return redirect(url_for('index'))
 
 @app.route('/update_count/<int:index>', methods=['POST'])
@@ -83,6 +106,7 @@ def manual_control():
 @app.route('/clear_sequence', methods=['POST'])
 def clear_sequence():
     sequence.clear()
+    save_cache()
     return redirect(url_for('index'))
 
 @app.route('/activities')
@@ -108,6 +132,7 @@ def add_activity():
         "StartAngle": start_angle,
         "EndAngle": end_angle
     }
+    save_cache()
     return redirect(url_for('activities_page'))
 
 @app.route('/update_activity', methods=['POST'])
@@ -118,6 +143,7 @@ def update_activity():
 
     if activity_name in activities and key in activities[activity_name]:
         activities[activity_name][key] = value
+        save_cache()
         return jsonify({"success": True})
     return jsonify({"success": False, "error": "Invalid activity or key"}), 400
 
@@ -125,6 +151,7 @@ def update_activity():
 def delete_activity(activity_name):
     if activity_name in activities:
         del activities[activity_name]
+        save_cache()
     return redirect(url_for('activities_page'))
 
 @app.route('/add_activity_to_sequence/<string:activity_name>', methods=['POST'])
