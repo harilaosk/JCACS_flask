@@ -52,10 +52,10 @@
     <!-- Table to Display and Edit Activities -->
     <h3>Defined Activities</h3>
 <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="thead-dark">
+    <table class="table table-bordered table-hover table-striped rounded-table">
+        <thead>
             <tr class="text-center">
-                <th>Select</th>
+                <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
                 <th>Activity Name</th>
                 <th>Min Force</th>
                 <th>Max Force</th>
@@ -75,44 +75,78 @@
                 <td class="align-middle">{{ name }}</td>
                 {% for key, value in activity.items() %}
                 <td class="align-middle text-center" contenteditable="true"
-                    onblur="updateActivity('{{ name }}', '{{ key }}', this.textContent)">
+                    onfocus="storeOriginalValue(this)"
+                    onblur="updateActivity('{{ name }}', '{{ key }}', this.textContent, this)">
                     {{ value }}
                 </td>
                 {% endfor %}
-                <td class="btn-group btn-group-unrounded" >
-                    <button class="btn btn-danger btn-sm" onclick="deleteActivity('{{ name }}')"title="Delete activity">Del</button>
-                    <button class="btn btn-success btn-sm" onclick="addToSequence('{{ name }}')" title="Add activity to sequence">Add</button>
+                <td class="btn-group btn-group-unrounded">
+                    <button class="btn btn-danger btn-sm" onclick="deleteActivity('{{ name }}')" title="Delete activity">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="addToSequence('{{ name }}')" title="Add activity to sequence">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-    <div class="text-center">
-        <button class="btn btn-secondary" onclick="exportSelected()">Export Selected</button>
-        <button class="btn btn-danger" onclick="deleteSelectedActivities()">Delete Selected Activities</button>
-    </div>
+<div class="d-flex justify-content-center mt-4">
+    <button class="btn btn-secondary me-2" onclick="exportSelected()">Export Selected</button>
+    <button class="btn btn-danger me-2" onclick="deleteSelectedActivities()">Delete Selected Activities</button>
 
-<form method="POST" action="/import_activities" enctype="multipart/form-data" class="mt-3">
-    <input type="file" name="file" accept=".csv" required>
-    <button type="submit" class="btn btn-secondary">Import Activities</button>
-</form>
+    <form method="POST" action="/import_activities" enctype="multipart/form-data" class="d-inline">
+        <input type="file" name="file" accept=".csv" class="d-none" id="fileInput" required onchange="updateFileName(this)">
+        <button type="button" class="btn btn-success me-2" onclick="triggerFileSelection()">Import Activities</button>
+        <span id="fileName" </span>
+    </form>
+</div>
+
 <script>
-    function updateActivity(activityName, key, value) {
+    function triggerFileSelection() {
+        const fileInput = document.getElementById('fileInput');
+        fileInput.click(); // Trigger the file selection dialog
+    }
+
+    function updateFileName(input) {
+        const fileName = input.files[0] ? input.files[0].name : "No file chosen";
+        document.getElementById("fileName").textContent = fileName;
+
+        // Automatically submit the form if a file is selected
+        if (input.files[0]) {
+            input.form.submit();
+        }
+    }
+</script>
+
+<script>
+    function updateActivity(activityName, key, value, cell) {
         // Validate that the value is a number
         if (isNaN(value) || value.trim() === "") {
+            cell.textContent = cell.originalValue; // Revert to original value
             alert("Please enter a valid number.");
             return;
+        }
+
+        // Round the value to the nearest integer
+        const roundedValue = Math.round(parseFloat(value));
+
+        // Update the cell content with the rounded value
+        if (value.trim() !== "") {
+            cell.textContent = roundedValue;
         }
 
         // Send the update request
         fetch('/update_activity', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ activity_name: activityName, key: key, value: value }),
+            body: new URLSearchParams({ activity_name: activityName, key: key, value: roundedValue }),
         })
         .then(response => {
             if (!response.ok) {
+                cell.textContent = originalValue; // Revert to original value
                 alert("Failed to update activity. Please try again!");
             }
         });
@@ -140,6 +174,12 @@
             } else {
                 alert('Failed to add activity to sequence.');
             }
+        });
+    }
+    function toggleSelectAll(selectAllCheckbox) {
+        const checkboxes = document.querySelectorAll('input[name="selected_activities"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
         });
     }
     function exportSelected() {
@@ -203,5 +243,8 @@
             }
         });
     }
+    function storeOriginalValue(cell) {
+    cell.originalValue = cell.textContent.trim(); // Store the original value on the cell element
+}
 </script>
 {% endblock %}
