@@ -64,7 +64,9 @@ def send_command(command):
 @app.route('/')
 def index():
     return render_template('index.html', sequence=sequence, activities=activities)
-
+def format_activity(activity):
+    return {key: int(float(value)) for key, value in activity.items()}
+    #return {key: int(float(value)) if float(value) == int(float(value)) else float(value) for key, value in activity.items()}
 @app.route('/add_command', methods=['POST'])
 def add_command():
     # Get command parameters from the form
@@ -137,6 +139,7 @@ def add_activity():
         "StartAngle": start_angle,
         "EndAngle": end_angle
     }
+    activities[activity_name] = format_activity(activities[activity_name])  # Format the activity
     save_cache()
     return redirect(url_for('activities_page'))
 
@@ -181,8 +184,8 @@ def delete_activities():
 @app.route('/add_activity_to_sequence/<string:activity_name>', methods=['POST'])
 def add_activity_to_sequence(activity_name):
     if activity_name in activities:
-        activity = activities[activity_name]
-        command = f"{float(activity['MIN_TARGET_FORCE'])} {float(activity['MAX_TARGET_FORCE'])} {float(activity['HOLD_TIME_MIN'])} {float(activity['HOLD_TIME_MAX'])} {float(activity['StartAngle'])} {float(activity['EndAngle'])}"
+        activity = format_activity(activities[activity_name])
+        command = f"{activity['MIN_TARGET_FORCE']} {activity['MAX_TARGET_FORCE']} {activity['HOLD_TIME_MIN']} {activity['HOLD_TIME_MAX']} {activity['StartAngle']} {activity['EndAngle']}"
         sequence.append({'command': command, 'count': 1})  # Default count to 1
     save_cache()
     return redirect(url_for('index'))
@@ -198,7 +201,7 @@ def export_activities():
     csv_data = [["Activity Name", "MIN_TARGET_FORCE", "MAX_TARGET_FORCE", "HOLD_TIME_MIN", "HOLD_TIME_MAX", "StartAngle", "EndAngle"]]
     for name in selected_activities:
         if name in activities:
-            activity = activities[name]
+            activity = format_activity(activities[name])
             csv_data.append([name] + list(activity.values()))
 
     # Generate CSV response using csv.writer
@@ -233,6 +236,7 @@ def import_activities():
                 "StartAngle": start_angle,
                 "EndAngle": end_angle
             }
+            activities[name] = format_activity(activities[name])
     save_cache()
     return redirect(url_for('activities_page'))
 
