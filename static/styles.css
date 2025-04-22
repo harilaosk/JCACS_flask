@@ -148,4 +148,32 @@ button:hover, .btn:hover {
 /* Unrounded buton groups*/
 .btn-group-unrounded {
 border-radius: 0;
+border: 0;
+}
+
+/* Rounded table */
+.rounded-table {
+    border-radius: 10px; /* Adjust the value for more or less rounding */
+    overflow: hidden; /* Ensures the border-radius is applied properly */
+    border: 6px solid var(--btn-border); /* Outer border */
+    border-collapse: separate; /* Prevent inner borders from collapsing */
+    border-spacing: 0; /* No spacing between cells */
+}
+    /*border-color: var(--btn-border);*/
+
+.rounded-table td,
+.rounded-table th {
+    border: none; /* Remove inner borders */
+}
+.bottom-aligned-image {
+    position: absolute;
+    bottom: 10px; /* Adjust spacing from the bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 80%; /* Adjust the size of the image */
+    height: auto;
+}
+.app-title {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
