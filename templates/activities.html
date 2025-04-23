@@ -3,14 +3,14 @@
 {% block content %}
     <h1>Define Activities</h1>
 
-    <!-- Form to Add New Activity -->
+
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg" data-bs-toggle="collapse" data-bs-target="#addActivityForm" style="cursor: pointer;">
+    <input type="checkbox" id="toggleForm" class="toggle-checkbox" hidden>
+    <label for="toggleForm" class="card-header bg" style="cursor: pointer;">
         <h5 class="mb-0">Add New Activity</h5>
-    </div>
-    <div id="addActivityForm" class="collapse">
-        <div class="card-body">
-            <form method="POST" action="/add_activity">
+    </label>
+        <div class="collapsible-content card-body">
+            <form id="addActivityForm" method="POST" action="/add_activity">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label for="activity_name" class="form-label">Activity Name</label>
@@ -24,6 +24,9 @@
                         <label for="max_force" class="form-label">Max Force</label>
                         <input type="number" id="max_force" name="max_force" class="form-control" placeholder="Enter max force" required>
                     </div>
+                </div>
+                <!-- New Row 1 -->
+                <div class="row g-3">
                     <div class="col-md-4">
                         <label for="hold_time_min" class="form-label">Hold Time Min</label>
                         <input type="number" id="hold_time_min" name="hold_time_min" class="form-control" placeholder="Enter hold duration at min" required>
@@ -34,20 +37,68 @@
                     </div>
                     <div class="col-md-4">
                         <label for="start_angle" class="form-label">Start Angle</label>
-                        <input type="number" id="start_angle" name="start_angle" class="form-control" placeholder="Enter first angle" required>
+                        <input type="number" id="start_angle" name="start_angle" class="form-control" placeholder="Enter start angle" required>
                     </div>
+                </div>
+
+                <!-- New Row 2 -->
+                <div class="row g-3">
                     <div class="col-md-4">
                         <label for="end_angle" class="form-label">End Angle</label>
-                        <input type="number" id="end_angle" name="end_angle" class="form-control" placeholder="Enter second angle" required>
+                        <input type="number" id="end_angle" name="end_angle" class="form-control" placeholder="Enter end angle" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary px-4">Add Activity</button>
                     </div>
                 </div>
-                <div class="mt-4 text-center">
-                    <button type="submit" class="btn btn-primary px-4">Add Activity</button>
-                </div>
             </form>
-        </div>
     </div>
 </div>
+    <!-- Form to Add New Activity -->
+<!--<div class="card shadow-sm mb-4">-->
+<!--    <div class="card-header bg" data-bs-toggle="collapse" data-bs-target="#addActivityForm" style="cursor: pointer;">-->
+<!--        <h5 class="mb-0">Add New Activity</h5>-->
+<!--    </div>-->
+<!--    <div id="addActivityForm" class="collapse">-->
+<!--        <div class="card-body">-->
+<!--            <form method="POST" action="/add_activity">-->
+<!--                <div class="row g-3">-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="activity_name" class="form-label">Activity Name</label>-->
+<!--                        <input type="text" id="activity_name" name="activity_name" class="form-control" placeholder="Enter activity name" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="min_force" class="form-label">Min Force</label>-->
+<!--                        <input type="number" id="min_force" name="min_force" class="form-control" placeholder="Enter min force" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="max_force" class="form-label">Max Force</label>-->
+<!--                        <input type="number" id="max_force" name="max_force" class="form-control" placeholder="Enter max force" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="hold_time_min" class="form-label">Hold Time Min</label>-->
+<!--                        <input type="number" id="hold_time_min" name="hold_time_min" class="form-control" placeholder="Enter hold duration at min" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="hold_time_max" class="form-label">Hold Time Max</label>-->
+<!--                        <input type="number" id="hold_time_max" name="hold_time_max" class="form-control" placeholder="Enter hold duration at max" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="start_angle" class="form-label">Start Angle</label>-->
+<!--                        <input type="number" id="start_angle" name="start_angle" class="form-control" placeholder="Enter first angle" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-4">-->
+<!--                        <label for="end_angle" class="form-label">End Angle</label>-->
+<!--                        <input type="number" id="end_angle" name="end_angle" class="form-control" placeholder="Enter second angle" required>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="mt-4 text-center">-->
+<!--                    <button type="submit" class="btn btn-primary px-4">Add Activity</button>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
     <!-- Table to Display and Edit Activities -->
     <h3>Defined Activities</h3>

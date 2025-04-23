@@ -254,18 +254,10 @@ border: 0;
 
 
 #addActivityForm {
-    position: absolute; /* Remove the collapsing card from the document flow */
-    top: 100%; /* Position it below the header */
-    width: 100%; /* Match the width of the parent container */
+    /*position: absolute; /* Remove the collapsing card from the document flow */
+
     z-index: 1; /* Ensure it appears above other elements */
-    margin: 0; /* Remove any default margins */
-    background-color: var(--content-bg); /*var(--content-box-bg); /*var(--main-bg); /* Ensure the background is visible */
-    box-sizing: border-box; /* Include padding and border in width/height */
-    /*border-radius: 5px; /* Add rounded corners for aesthetics */
-    border-radius: 0 0 5px 5px; /* Rounded corners for the bottom */
-    /*padding: 20px; /* Add some padding for content */
-    border: 6px solid var(--btn-border); /* Outer border */
-    color: var(--text-color);
+
 
 
 
@@ -277,10 +269,31 @@ border: 0;
 .card-header {
     /*background-color: var(--content-box-bg); /**/
     /*color: var(--text-color); /**/
-    padding: 10px;
+    /* padding: 10px; */
     border-radius: 5px 5px 0 0; /* Rounded corners for the top */
     border-top: 6px solid var(--btn-border); /* top border */
     border-left: 6px solid var(--btn-border); /* left border */
     border-right: 6px solid var(--btn-border); /* right border */
+
+}
+
+.collapsible-content {
+    max-height: 0; /* Fully collapsed initially */
+    overflow: hidden; /* Hide content when collapsed */
+    transition: max-height 0.3s ease; /* Smooth transition */
+    margin: 0; /* Remove any default margins */
+    padding: 0; /* Remove any default padding */
+    background-color: var(--content-bg); /* Ensure the background is visible */
+    box-sizing: border-box; /* Include padding and border in width/height */
+    border-radius: 0 0 5px 5px; /* Rounded corners for the bottom */
+
+    color: var(--text-color);
+}
+
+.toggle-checkbox:checked ~ .collapsible-content {
+    max-height: none; /* Large enough to fit the content */
+    overflow: visible; /* Hide content when collapsed */
+    border: 6px solid var(--btn-border); /* Outer border */
+    padding: 10px;
 
 }
