@@ -16,6 +16,7 @@
     --nav-btn-active-bg: #d9d9d9;
     --nav-btn-border: #000;
     --nav-btn-bg: #ffffff;
+    --content-bg: #f8f9fa;
 }
 
 /* Simple Dark Theme */
@@ -30,6 +31,8 @@
     --nav-btn-active-bg: #495057;
     --nav-btn-border: #ffffff;
     --nav-btn-bg: #212529;
+    --content-bg: #343a40;
+
 }
 
 /* Colourful Theme */
@@ -44,6 +47,8 @@
     --nav-btn-active-bg: #f8b88a; /* Orange */
     --nav-btn-border: #f08590; /* Pink for unselected buttons */
     --nav-btn-active-border: #221c41; /* Navy for selected buttons */
+    --content-bg: #f8f9fa;
+
 }
 
 /* Global Styles */
@@ -110,6 +115,7 @@ body {
 /* Main Content */
 .theme-main {
 /*    margin-left: var(--nav-width); /* Ensure main content is offset by nav width */
+    margin-left: 0; /* Ensure main content is offset by nav width */
     background-color: var(--main-bg);
     color: var(--text-color);
     padding: 20px;
@@ -153,7 +159,7 @@ border: 0;
 
 /* Rounded table */
 .rounded-table {
-    border-radius: 10px; /* Adjust the value for more or less rounding */
+    border-radius: 5px; /* Adjust the value for more or less rounding */
     overflow: hidden; /* Ensures the border-radius is applied properly */
     border: 6px solid var(--btn-border); /* Outer border */
     border-collapse: separate; /* Prevent inner borders from collapsing */
@@ -241,5 +247,40 @@ border: 0;
 .theme-nav-toggle {
     height: 100vh; /* Constrain height to viewport */
     position: fixed;
+
+}
+
+
+
+
+#addActivityForm {
+    position: absolute; /* Remove the collapsing card from the document flow */
+    top: 100%; /* Position it below the header */
+    width: 100%; /* Match the width of the parent container */
+    z-index: 1; /* Ensure it appears above other elements */
+    margin: 0; /* Remove any default margins */
+    background-color: var(--content-bg); /*var(--content-box-bg); /*var(--main-bg); /* Ensure the background is visible */
+    box-sizing: border-box; /* Include padding and border in width/height */
+    /*border-radius: 5px; /* Add rounded corners for aesthetics */
+    border-radius: 0 0 5px 5px; /* Rounded corners for the bottom */
+    /*padding: 20px; /* Add some padding for content */
+    border: 6px solid var(--btn-border); /* Outer border */
+    color: var(--text-color);
+
+
+
+}
+.card {
+   position: relative
+}
+
+.card-header {
+    /*background-color: var(--content-box-bg); /**/
+    /*color: var(--text-color); /**/
+    padding: 10px;
+    border-radius: 5px 5px 0 0; /* Rounded corners for the top */
+    border-top: 6px solid var(--btn-border); /* top border */
+    border-left: 6px solid var(--btn-border); /* left border */
+    border-right: 6px solid var(--btn-border); /* right border */
 
 }
