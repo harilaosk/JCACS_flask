@@ -58,7 +58,7 @@ body {
 .theme-nav {
     background-color: var(--nav-bg);
     color: var(--text-color);
-    width: var(--nav-width);
+    width: var(--nav-width); /* Set width of navigation pane */
     height: 100vh; /* Constrain height to viewport */
     overflow-y: auto; /* Enable scrolling when content overflows */
     position: fixed;
@@ -109,7 +109,7 @@ body {
 
 /* Main Content */
 .theme-main {
-    margin-left: var(--nav-width); /* Ensure main content is offset by nav width */
+/*    margin-left: var(--nav-width); /* Ensure main content is offset by nav width */
     background-color: var(--main-bg);
     color: var(--text-color);
     padding: 20px;
@@ -176,4 +176,58 @@ border: 0;
 .app-title {
     font-size: 1.5rem;
     font-weight: bold;
+}
+
+
+#layout {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+
+
+
+
+#sidebar {
+    flex-basis: var(--nav-width); /* Sidebar width */
+    width: var(--nav-width); /* Ensure consistent width */
+    transition: flex-basis 0s ease, width 0s ease; /* Adjusted transition duration */
+    overflow: hidden; /* Hide content during transition */
+}
+
+#sidebar.show {
+    flex-basis: var(--nav-width); /* Expanded sidebar */
+    width: var(--nav-width); /* Expanded width */
+    overflow: visible; /* Allow content to be visible */
+}
+
+#sidebar:not(.show) {
+    flex-basis: 0; /* Collapse sidebar */
+    width: 0; /* Ensure width is also set to 0 */
+    overflow: hidden; /* Hide content when collapsed */
+}
+
+.theme-main {
+    flex-grow: 1; /* Expand main content */
+    transition: margin-left 0s ease; /* Adjusted transition duration */
+}
+
+#sidebar.show + .theme-main {
+    margin-left: var(--nav-width); /* Offset main content when sidebar is visible */
+}
+
+#sidebar:not(.show) + .theme-main {
+    margin-left: 0; /* Remove offset when sidebar is collapsed */
+}
+.toggle-btn {
+    background-color: transparent; /* Make the button transparent */
+    border: none; /* Remove the border */
+    color: var(--text-color); /* Use the theme's text color */
+    padding: 5px; /* Adjust padding for a smaller size */
+    transition: color 0.3s ease; /* Add a hover effect */
+}
+
+.toggle-btn:hover {
+    color: var(--btn-active-bg); /* Change color on hover */
 }
