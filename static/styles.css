@@ -235,40 +235,27 @@ border: 0;
     transition: color 0.3s ease; /* Add a hover effect */
     z-index: 1000; /* Ensure the button stays above other elements */
     pointer-events: auto; /* Ensure the button is clickable */
-
-
 }
 
 .toggle-btn:hover {
     color: grey; /* Change color on hover */
     background-color: var(--nav-bg); /* Make the button transparent */
-
 }
 .theme-nav-toggle {
     height: 100vh; /* Constrain height to viewport */
     position: fixed;
-
 }
 
-
-
-
-#addActivityForm {
-    /*position: absolute; /* Remove the collapsing card from the document flow */
-
-    z-index: 1; /* Ensure it appears above other elements */
-
-
-
-
-}
 .card {
-   position: relative
+   position: relative;
+   border: none; /* Removes any border around the card */
+   border-bottom: 1px solid var(--btn-border); /* Bottom border */
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 10px rgba(0, 0, 0, 0.1); /* Adds shadow to the bottom */
 }
 
 .card-header {
-    /*background-color: var(--content-box-bg); /**/
-    /*color: var(--text-color); /**/
+    background-color: var(--content-bg); /**/
+    color: var(--text-color); /**/
     /* padding: 10px; */
     border-radius: 5px 5px 0 0; /* Rounded corners for the top */
     border-top: 6px solid var(--btn-border); /* top border */
