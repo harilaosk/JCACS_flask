@@ -13,13 +13,9 @@
 </head>
 <body>
     <div class="d-flex" id=layout">
-        <!-- Sidebar -->
         <!-- Collapsible Sidebar -->
     <div class="collapse show" id="sidebar">
         <nav class="theme-nav">
-            <button class="btn btn-primary w-100 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-expanded="true" aria-controls="navContent">
-                Toggle Navigation
-            </button>
             <div id="navContent" class="collapse show">
                 <div class="p-3">
                         <h2 class="app-title text-center mb-4">JointCycleACS</h2>
@@ -40,15 +36,11 @@
                 </div>
             </nav>
         </div>
-
-<!--        &lt;!&ndash; Toggle Button &ndash;&gt;-->
-<!--        <button class="btn btn-primary position-absolute" style="top: 10px; left: 10px;" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="true" aria-controls="sidebar">-->
-<!--            Toggle Sidebar-->
-<!--        </button>-->
-        <!-- Toggle Button -->
-    <button class="btn btn-sm position-absolute toggle-btn" style="top: 10px; left: 10px;" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="true" aria-controls="sidebar">
-        <i class="bi bi-list"></i>
-    </button>
+        <div class="theme-nav-toggle">
+            <button class="btn btn-sm position-absolute toggle-btn" style="top: 5px; left: 2px;" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="true" aria-controls="sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
 
         <!-- Main Content -->
         <div class="theme-main flex-grow-1">

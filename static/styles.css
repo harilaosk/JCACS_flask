@@ -221,13 +221,25 @@ border: 0;
     margin-left: 0; /* Remove offset when sidebar is collapsed */
 }
 .toggle-btn {
+    position: absolute; /* Position it absolutely */
     background-color: transparent; /* Make the button transparent */
     border: none; /* Remove the border */
     color: var(--text-color); /* Use the theme's text color */
-    padding: 5px; /* Adjust padding for a smaller size */
+    padding: 1px; /* Adjust padding for a smaller size */
     transition: color 0.3s ease; /* Add a hover effect */
+    z-index: 1000; /* Ensure the button stays above other elements */
+    pointer-events: auto; /* Ensure the button is clickable */
+
+
 }
 
 .toggle-btn:hover {
-    color: var(--btn-active-bg); /* Change color on hover */
+    color: grey; /* Change color on hover */
+    background-color: var(--nav-bg); /* Make the button transparent */
+
+}
+.theme-nav-toggle {
+    height: 100vh; /* Constrain height to viewport */
+    position: fixed;
+
 }
