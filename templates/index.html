@@ -17,24 +17,24 @@
     </form>
 
     <h3>Sequence</h3>
-    <ul class="list-group mb-3">
-        {% for item in sequence %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <strong>Command:</strong> {{ item.command }}
-                <br>
-                <form method="POST" action="/update_count/{{ loop.index0 }}" class="d-inline">
-                    <strong>Count:</strong>
-                    <input type="number" name="count" value="{{ item.count }}" min="1" class="form-control d-inline-block" style="width: 80px;">
-                    <button type="submit" class="btn btn-sm btn-secondary">Update</button>
-                </form>
-            </div>
-            <form method="POST" action="/delete_command/{{ loop.index0 }}" style="margin-left: auto;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-            </form>
-        </li>
-        {% endfor %}
-    </ul>
+<!--    <ul class="list-group mb-3">-->
+<!--        {% for item in sequence %}-->
+<!--        <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--            <div>-->
+<!--                <strong>Command:</strong> {{ item.command }}-->
+<!--                <br>-->
+<!--                <form method="POST" action="/update_count/{{ loop.index0 }}" class="d-inline">-->
+<!--                    <strong>Count:</strong>-->
+<!--                    <input type="number" name="count" value="{{ item.count }}" min="1" class="form-control d-inline-block" style="width: 80px;">-->
+<!--                    <button type="submit" class="btn btn-sm btn-secondary">Update</button>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <form method="POST" action="/delete_command/{{ loop.index0 }}" style="margin-left: auto;">-->
+<!--                <button type="submit" class="btn btn-danger btn-sm">Delete</button>-->
+<!--            </form>-->
+<!--        </li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
 
 <table class="table table-bordered table-hover table-striped rounded-table">
     <thead>
