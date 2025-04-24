@@ -182,6 +182,10 @@ border: 0;
     max-width: 80%; /* Adjust the size of the image */
     height: auto;
 }
+.bottom-aligned-image.overlapping {
+    position: relative; /* Fallback to relative positioning if overlapping occurs */
+    margin-top: 10px; /* Adjust this value to control the overlap */
+}
 .app-title {
     font-size: 1.5rem;
     font-weight: bold;
@@ -236,7 +240,7 @@ border: 0;
     color: var(--text-color); /* Use the theme's text color */
     padding: 1px; /* Adjust padding for a smaller size */
     transition: color 0.3s ease; /* Add a hover effect */
-    z-index: 1000; /* Ensure the button stays above other elements */
+    z-index: 500; /* Ensure the button stays above other elements */
     pointer-events: auto; /* Ensure the button is clickable */
 }
 
@@ -308,3 +312,7 @@ border: 0;
     color: var(--btn-border-text); /* Use theme's text color */
 }
 
+
+#sidebar {
+    z-index: 2; /* Ensure the button stays above other elements */
+}

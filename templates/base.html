@@ -14,10 +14,10 @@
 <body>
     <div class="d-flex" id=layout">
         <!-- Collapsible Sidebar -->
-    <div class="collapse show" id="sidebar">
-        <nav class="theme-nav">
-            <div id="navContent" class="collapse show">
-                <div class="p-3">
+        <div class="collapse show" id="sidebar">
+            <nav class="theme-nav">
+                <div id="navContent" class="collapse show">
+                    <div class="p-3">
                         <h2 class="app-title text-center mb-4">JointCycleACS</h2>
 
                         <h4>Navigation</h4>
@@ -36,7 +36,7 @@
                 </div>
             </nav>
         </div>
-        <div class="theme-nav-toggle">
+        <div class="theme-nav-toggle" style="z-index:900">
             <button class="btn btn-sm position-absolute toggle-btn" style="top: 5px; left: 2px;" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="true" aria-controls="sidebar">
                 <i class="bi bi-list"></i>
             </button>
@@ -85,6 +85,36 @@
         themeSelector.addEventListener('change', (e) => {
             const selectedTheme = e.target.value;
             updateThemeImage(selectedTheme);
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const bottomImage = document.querySelector(".bottom-aligned-image");
+            const navContent = document.getElementById("navContent");
+
+            function checkOverlap() {
+                if (bottomImage && navContent) {
+                    const imageRect = bottomImage.getBoundingClientRect();
+                    const navRect = navContent.getBoundingClientRect();
+
+                    // Check for overlap
+                    const isOverlapping = !(imageRect.bottom < navRect.top ||
+                                            imageRect.top > navRect.bottom ||
+                                            imageRect.right < navRect.left ||
+                                            imageRect.left > navRect.right);
+
+                    if (isOverlapping) {
+                        bottomImage.classList.add("overlapping");
+                    } else {
+                        bottomImage.classList.remove("overlapping");
+                    }
+                }
+            }
+
+            // Check overlap on page load
+            checkOverlap();
+
+            // Recheck overlap on window resize
+            window.addEventListener("resize", checkOverlap);
         });
 
     </script>
