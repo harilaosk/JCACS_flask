@@ -316,3 +316,22 @@ border: 0;
 #sidebar {
     z-index: 2; /* Ensure the button stays above other elements */
 }
+/* unvisited link */
+a:link {
+  color: var(--text-color);
+}
+
+/* visited link */
+a:visited {
+  color: var(--text-color);
+}
+
+/* mouse over link */
+a:hover {
+  color: var(--text-color);
+}
+
+/* selected link */
+a:active {
+  color: var(--text-color);
+}
