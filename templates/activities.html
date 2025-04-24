@@ -86,13 +86,15 @@
                     {{ value }}
                 </td>
                 {% endfor %}
-                <td class="btn-group btn-group-unrounded">
-                    <button class="btn btn-danger btn-sm" onclick="deleteActivity('{{ name }}')" title="Delete activity">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    <button class="btn btn-success btn-sm" onclick="addToSequence('{{ name }}')" title="Add activity to sequence">
-                        <i class="bi bi-plus-circle"></i>
-                    </button>
+                <td class="align-middle text-center">
+                    <div class="btn-group btn-group-unrounded">
+                        <button class="btn btn-danger btn-sm" onclick="deleteActivity('{{ name }}')" title="Delete activity">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="addToSequence('{{ name }}')" title="Add activity to sequence">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
@@ -252,5 +254,47 @@
     function storeOriginalValue(cell) {
     cell.originalValue = cell.textContent.trim(); // Store the original value on the cell element
 }
+        // Save sidebar and card states to localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebar');
+        const toggleFormCheckbox = document.getElementById('toggleForm');
+
+        // Restore sidebar state
+        const sidebarState = localStorage.getItem('sidebarState');
+        if (sidebarState === 'show') {
+            sidebar.classList.add('show');
+        } else {
+            sidebar.classList.remove('show');
+        }
+
+        // Restore card collapse state
+        const cardState = localStorage.getItem('cardState');
+        if (cardState === 'expanded') {
+            toggleFormCheckbox.checked = true;
+        } else {
+            toggleFormCheckbox.checked = false;
+        }
+
+        // Save sidebar state on toggle
+        document.querySelector('.toggle-btn').addEventListener('click', function () {
+            const isSidebarVisible = sidebar.classList.contains('show');
+            localStorage.setItem('sidebarState', isSidebarVisible ? 'hide' : 'show');
+        });
+
+        // Save card collapse state on toggle
+        toggleFormCheckbox.addEventListener('change', function () {
+            localStorage.setItem('cardState', toggleFormCheckbox.checked ? 'expanded' : 'collapsed');
+        });
+    });
+
+    // Prevent form submission from resetting states
+    document.getElementById('addActivityForm').addEventListener('submit', function (event) {
+        // Save the current states before form submission
+        const sidebar = document.getElementById('sidebar');
+        const toggleFormCheckbox = document.getElementById('toggleForm');
+
+        localStorage.setItem('sidebarState', sidebar.classList.contains('show') ? 'show' : 'hide');
+        localStorage.setItem('cardState', toggleFormCheckbox.checked ? 'expanded' : 'collapsed');
+    });
 </script>
 {% endblock %}

@@ -17,6 +17,7 @@
     --nav-btn-border: #000;
     --nav-btn-bg: #ffffff;
     --content-bg: #f8f9fa;
+    --btn-border-text: #ffffff;
 }
 
 /* Simple Dark Theme */
@@ -32,6 +33,7 @@
     --nav-btn-border: #ffffff;
     --nav-btn-bg: #212529;
     --content-bg: #343a40;
+    --btn-border-text: #ffffff;
 
 }
 
@@ -48,6 +50,7 @@
     --nav-btn-border: #f08590; /* Pink for unselected buttons */
     --nav-btn-active-border: #221c41; /* Navy for selected buttons */
     --content-bg: #f8f9fa;
+    --btn-border-text: #221c41;
 
 }
 
@@ -281,6 +284,27 @@ border: 0;
     max-height: none; /* Large enough to fit the content */
     overflow: visible; /* Hide content when collapsed */
     border: 6px solid var(--btn-border); /* Outer border */
-    padding: 10px;
+    padding: 5px;
 
 }
+
+.row {
+    padding: 5px;
+}
+/* General Table Styling */
+.table {
+    background-color: var(--content-bg); /* Use theme's content background */
+    color: var(--text-color); /* Use theme's text color */
+    border-collapse: separate; /* Ensure borders don't collapse */
+    border-spacing: 0; /* No spacing between cells */
+
+}
+.table tbody tr td{
+    background-color: var(--content-bg); /* Use theme's content background */
+    color: var(--text-color); /* Use theme's text color */
+}
+.table thead tr th{
+    background-color: var(--btn-border); /* Use theme's content background */
+    color: var(--btn-border-text); /* Use theme's text color */
+}
+
