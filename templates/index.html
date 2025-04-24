@@ -36,6 +36,153 @@
         {% endfor %}
     </ul>
 
+<table class="table table-bordered table-hover table-striped rounded-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Activity</th>
+            <th>Command</th>
+            <th>Count</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="sequence-table">
+        {% for item in sequence %}
+        <tr data-index="{{ loop.index0 }}">
+            <td>{{ loop.index }}</td>
+
+            <td>
+                {% if item.activity_name %}
+                <a href="/activities#{{ item.activity_name }}">{{ item.activity_name }}</a>
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+            <td>{{ item.command }}</td>
+            <td contenteditable="true"
+                onfocus="storeOriginalValue(this)"
+                onblur="updateSequenceCount({{ loop.index0 }}, this.textContent, this)">
+                {{ item.count }}
+            </td>
+            <td>
+                <form method="POST" action="/update_sequence_item/{{ loop.index0 }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </form>
+                <form method="POST" action="/delete_command/{{ loop.index0 }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+                <button class="btn btn-sm btn-secondary move-up">↑</button>
+                <button class="btn btn-sm btn-secondary move-down">↓</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('sequence-table');
+
+        // Reorder sequence
+        function reorderSequence(newOrder) {
+            fetch('/reorder_sequence', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ new_order: newOrder })
+            }).then(response => response.json()).then(data => {
+                if (data.success) location.reload();
+            });
+        }
+
+        // Move up/down buttons
+        table.addEventListener('click', (e) => {
+            if (e.target.classList.contains('move-up') || e.target.classList.contains('move-down')) {
+                const row = e.target.closest('tr');
+                const index = parseInt(row.dataset.index);
+                const rows = Array.from(table.querySelectorAll('tr'));
+                const newOrder = rows.map(r => parseInt(r.dataset.index));
+
+                if (e.target.classList.contains('move-up') && index > 0) {
+                    [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+                } else if (e.target.classList.contains('move-down') && index < rows.length - 1) {
+                    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+                }
+
+                reorderSequence(newOrder);
+            }
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('sequence-table');
+
+        // Handle update button click
+        table.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Update') {
+                e.preventDefault();
+                const row = e.target.closest('tr');
+                const index = row.dataset.index;
+
+                // Send AJAX request to update the sequence item
+                fetch(`/update_sequence_item/${index}`, {
+                    method: 'POST',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the row with the new values
+                        row.querySelector('td:nth-child(3)').textContent = data.command;
+                        row.querySelector('td:nth-child(2)').innerHTML = data.activity_name
+                            ? `<a href="/activities#${data.activity_name}">${data.activity_name}</a>`
+                            : 'N/A';
+                    } else {
+                        alert('Failed to update sequence item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating sequence item:', error);
+                    alert('An error occurred while updating the sequence item.');
+                });
+            }
+        });
+    });
+</script>
+<script>
+    function storeOriginalValue(cell) {
+        cell.originalValue = cell.textContent.trim(); // Store the original value
+    }
+
+    function updateSequenceCount(index, value, cell) {
+        // Validate that the value is a positive integer
+        if (isNaN(value) || value.trim() === "" || parseInt(value) <= 0) {
+            cell.textContent = cell.originalValue; // Revert to original value
+            alert("Please enter a valid positive integer.");
+            return;
+        }
+
+        // Send the update request to the backend
+        fetch(`/update_count/${index}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ count: parseInt(value) }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                cell.textContent = cell.originalValue; // Revert to original value
+                alert("Failed to update count. Please try again!");
+            }
+        })
+        .catch(error => {
+            console.error('Error updating sequence count:', error);
+            cell.textContent = cell.originalValue; // Revert to original value
+            alert("An error occurred while updating the sequence count.");
+        });
+    }
+</script>
+
+
     <form method="POST" action="/run_sequence" class="mb-3">
         <button type="submit" class="btn btn-success">Run Sequence</button>
         <button type="submit" formaction="/clear_sequence" class="btn btn-warning">Clear Sequence</button>

@@ -87,9 +87,14 @@ def delete_command(index):
 def update_count(index):
     if 0 <= index < len(sequence):
         new_count = request.form.get('count', 1)
-        sequence[index]['count'] = int(new_count)
-    save_cache()
-    return redirect(url_for('index'))
+        try:
+            sequence[index]['count'] = int(new_count)
+            save_cache()
+            # return redirect(url_for('index'))
+            return jsonify({"success": True})
+        except ValueError:
+            return jsonify({"success": False, "error": "Invalid count value"}), 400
+    return jsonify({"success": False, "error": "Invalid sequence index"}), 400
 
 @app.route('/run_sequence', methods=['POST'])
 def run_sequence():
@@ -186,7 +191,7 @@ def add_activity_to_sequence(activity_name):
     if activity_name in activities:
         activity = format_activity(activities[activity_name])
         command = f"{activity['MIN_TARGET_FORCE']} {activity['MAX_TARGET_FORCE']} {activity['HOLD_TIME_MIN']} {activity['HOLD_TIME_MAX']} {activity['StartAngle']} {activity['EndAngle']}"
-        sequence.append({'command': command, 'count': 1})  # Default count to 1
+        sequence.append({'command': command, 'count': 1, 'activity_name': activity_name})  # Include activity_name
     save_cache()
     return redirect(url_for('index'))
 
@@ -239,6 +244,31 @@ def import_activities():
             activities[name] = format_activity(activities[name])
     save_cache()
     return redirect(url_for('activities_page'))
+
+@app.route('/update_sequence_item/<int:index>', methods=['POST'])
+def update_sequence_item(index):
+    """Update a sequence item to the latest version of the linked activity."""
+    global sequence  # Ensure the global sequence is used
+    if 0 <= index < len(sequence):
+        activity_name = sequence[index].get('activity_name')
+        if activity_name and activity_name in activities:
+            activity = format_activity(activities[activity_name])
+            command = f"{activity['MIN_TARGET_FORCE']} {activity['MAX_TARGET_FORCE']} {activity['HOLD_TIME_MIN']} {activity['HOLD_TIME_MAX']} {activity['StartAngle']} {activity['EndAngle']}"
+            sequence[index]['command'] = command
+            save_cache()
+            return jsonify({"success": True, "command": command, "activity_name": activity_name})
+    return jsonify({"success": False, "error": "Invalid sequence index or activity"}), 400
+
+@app.route('/reorder_sequence', methods=['POST'])
+def reorder_sequence():
+    """Reorder the sequence based on the provided order."""
+    global sequence  # Ensure the global sequence is used
+    new_order = request.get_json().get('new_order', [])
+    if len(new_order) == len(sequence) and all(isinstance(i, int) and 0 <= i < len(sequence) for i in new_order):
+        sequence = [sequence[i] for i in new_order]
+        save_cache()
+        return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Invalid order"}), 400
 
 @app.route('/manual_control_page')
 def manual_control_page():
