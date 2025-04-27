@@ -15,7 +15,7 @@ app.secret_key = "secret_key"
 socketio = SocketIO(app)
 
 # Arduino serial connection configuration
-SERIAL_PORT = 'COM3'  # Update to match your Arduino's port
+SERIAL_PORT = 'COM6'  # Update to match your Arduino's port
 BAUD_RATE = 115200
 
 # Initialize global variables
@@ -281,6 +281,53 @@ def debug_activities():
 @app.route('/debug_sequences', methods=['GET'])
 def debug_sequences():
     return jsonify(sequence)
+
+from flask_socketio import emit
+
+@app.route('/run_cycles')
+def run_cycles_page():
+    return render_template('run_cycles.html')
+
+@socketio.on('start_run')
+def start_run():
+    global sequence
+    connect_to_arduino()
+    if not arduino:
+        emit('log', {'message': 'Arduino not connected'})
+        return
+
+    for item in sequence:
+        command = item['command']
+        if 'activity_name' in item:
+            activity = item['activity_name']
+        else:
+            actvity = command
+        count = item['count']
+        current_count = 0
+        status1 = True
+        emit('log', {'message': activity})
+
+        line = 0
+
+        # while current_count < count:
+        send_command(command)
+        while line != "###":
+            line = arduino.readline().decode('utf-8').strip()
+        while status1: #current_count < count: # was True
+            if arduino.in_waiting > 0:
+                line = arduino.readline().decode('utf-8').strip()
+                emit('log', {'message': line})
+
+                if "Cycle count:" in line:
+                    current_count = int(line.split(":")[1].strip())
+                    # emit('update_count', {'activity': activity, 'count': current_count})
+                    if current_count >= count: # was >=
+                        status1 = False
+                        current_count = 0
+                        emit('log', {'message': ''})
+                        break
+    emit('log', {'message': 'Sequence completed'})
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
