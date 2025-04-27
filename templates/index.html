@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Rig Control Interface</h1>
+<!--    <h1>Rig Control Interface</h1>-->
+    <h1>Sequence Creation</h1>
     <form method="POST" action="/add_command" class="mb-3">
         <div class="row">
             <div class="col-md-6">
@@ -184,7 +185,7 @@
 
 
     <form method="POST" action="/run_sequence" class="mb-3">
-        <button type="submit" class="btn btn-success">Run Sequence</button>
+<!--        <button type="submit" class="btn btn-success">Run Sequence</button>-->
         <button type="submit" formaction="/clear_sequence" class="btn btn-warning">Clear Sequence</button>
     </form>
 {% endblock %}

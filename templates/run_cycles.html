@@ -41,8 +41,9 @@
         <h6>Current Activity: <span id="current-activity">N/A</span></h6>
         <h6>Force: <span id="current-force">0.00</span> N</h6>
         <h6>Range of Motion (RoM): <span id="current-rom">0</span></h6>
-        <h6>Current Count: <span id="current-count">0</span></h6>
-        <h6>Total Activities: <span id="total-activities">0</span></h6>
+        <h6>Current Activity Count: <span id="current-count">0</span></h6>
+        <h6> - <h6>
+        <h6>Total Sequence Cycles: <span id="total-activities">0</span></h6>
         <h6>Remaining Cycles: <span id="remaining-cycles">0</span></h6>
     </div>
 </div>
@@ -53,6 +54,10 @@
     </div>
     <div class="card-body">
         <pre id="log" style="height: 300px; overflow-y: scroll; background-color: #f8f9fa; padding: 10px;"></pre>
+    </div>
+    <div class="card-footer">
+        <button id="clear-log" class="btn btn-warning">Clear Log</button>
+        <button id="export-log" class="btn btn-secondary">Export Log</button>
     </div>
 </div>
 
@@ -187,6 +192,27 @@
         if (data.remaining_cycles !== undefined) {
             document.getElementById('remaining-cycles').textContent = data.remaining_cycles;
         }
+    });
+</script>
+<script>
+    const clearLogButton = document.getElementById('clear-log');
+    const exportLogButton = document.getElementById('export-log');
+
+    // Clear log functionality
+    clearLogButton.addEventListener('click', () => {
+        log.textContent = ''; // Clear the log content
+        alert('Log cleared successfully.');
+    });
+
+    // Export log functionality
+    exportLogButton.addEventListener('click', () => {
+        const blob = new Blob([log.textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'run_log.txt';
+        a.click();
+        URL.revokeObjectURL(url); // Clean up the URL object
     });
 </script>
 {% endblock %}

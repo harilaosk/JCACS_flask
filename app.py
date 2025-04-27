@@ -7,7 +7,7 @@ import os
 import csv
 import serial.tools.list_ports
 
-
+LOG_FILE = 'run_log.txt'
 
 # File paths for caching
 CACHE_FILE = 'cache.json'
@@ -67,6 +67,9 @@ def send_command(command):
 @app.route('/')
 def index():
     return render_template('index.html', sequence=sequence, activities=activities)
+@app.route('/sequence')
+def sequence_page():
+    return render_template('index.html', sequence=sequence, activities=activities)
 def format_activity(activity):
     return {key: int(float(value)) for key, value in activity.items()}
     #return {key: int(float(value)) if float(value) == int(float(value)) else float(value) for key, value in activity.items()}
@@ -74,8 +77,9 @@ def format_activity(activity):
 def add_command():
     # Get command parameters from the form
     command = request.form.get('command')
+    activity = 'Custom Defined'
     count = request.form.get('count', 1)  # Default count to 1 if not specified
-    sequence.append({'command': command, 'count': int(count)})
+    sequence.append({'activity_name': activity, 'command': command, 'count': int(count)})
     save_cache()
     return redirect(url_for('index'))
 
@@ -298,6 +302,8 @@ def start_run():
     if not arduino:
         emit('log', {'message': 'Arduino not connected'})
         return
+    total_cycles = sum(item['count'] for item in sequence)
+    completed_cycles = 0
 
     for item in sequence:
         command = item['command']
@@ -309,6 +315,11 @@ def start_run():
         current_count = 0
         status1 = True
         emit('log', {'message': activity})
+        emit('update_progress', {
+            'activity': activity,
+            'total_cycles': total_cycles,
+            'remaining_cycles': total_cycles - completed_cycles,
+        })
 
         line = 0
 
@@ -323,12 +334,24 @@ def start_run():
 
                 if "Cycle count:" in line:
                     current_count = int(line.split(":")[1].strip())
+                    completed_cycles += 1
+                    emit('update_progress', {
+                        'current_count': current_count,
+                        'remaining_cycles': total_cycles - completed_cycles,
+                    })
+
                     # emit('update_count', {'activity': activity, 'count': current_count})
                     if current_count >= count: # was >=
                         status1 = False
                         current_count = 0
                         emit('log', {'message': ''})
                         break
+                if "Min force during ramp down:" in line or "Max force during ramp up:" in line:
+                    force = float(line.split(":")[1].strip())
+                    emit('update_progress', {'force': force})
+                if "RoM down:" in line or "RoM up:" in line:
+                    rom = int(line.split(":")[1].strip())
+                    emit('update_progress', {'rom': rom})
     emit('log', {'message': 'Sequence completed'})
 
 # Check for available serial ports
@@ -372,6 +395,29 @@ def close_port():
     return jsonify({"success": False, "error": "Port is not open"})
 
 ###
+# @app.route('/clear_log', methods=['POST'])
+# def clear_log():
+#     """Clear the log file."""
+#     try:
+#         if os.path.exists(LOG_FILE):
+#             open(LOG_FILE, 'w').close()  # Clear the file
+#         return jsonify({"success": True})
+#     except Exception as e:
+#         return jsonify({"success": False, "error": str(e)}), 500
+#
+# @app.route('/export_log', methods=['GET'])
+# def export_log():
+#     """Export the log file."""
+#     try:
+#         if os.path.exists(LOG_FILE):
+#             return Response(
+#                 open(LOG_FILE, 'r').read(),
+#                 mimetype='text/plain',
+#                 headers={"Content-Disposition": "attachment;filename=run_log.txt"}
+#             )
+#         return jsonify({"success": False, "error": "Log file not found"}), 404
+#     except Exception as e:
+#         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
