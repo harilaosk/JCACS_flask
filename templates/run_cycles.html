@@ -5,17 +5,45 @@
 
 <div class="card mb-4">
     <div class="card-header">
+        <h5>Arduino Port Selector</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label for="port-selector" class="form-label">Select Port</label>
+            <select id="port-selector" class="form-select">
+                <option value="" disabled selected>-- Select a Port --</option>
+<!--                <option value="manual">Manual</option>-->
+            </select>
+        </div>
+        <div class="mb-3" id="manual-port-container" style="display: none;">
+            <label for="manual-port" class="form-label">Manual Port Input</label>
+            <input type="text" id="manual-port" class="form-control" placeholder="Enter COM port (e.g., COM6)">
+        </div>
+        <button id="set-port" class="btn btn-primary">Set Port</button>
+        <button id="reopen-port" class="btn btn-success">Reopen Port</button>
+        <button id="close-port" class="btn btn-danger">Close Port</button>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
         <h5>Run Progress</h5>
     </div>
     <div class="card-body">
-        <ul id="progress-list" class="list-group">
-            {% for item in sequence %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ item.command }}</span>
-                <span id="count-{{ loop.index0 }}">0 / {{ item.count }}</span>
-            </li>
-            {% endfor %}
-        </ul>
+<!--        <ul id="progress-list" class="list-group">-->
+<!--            {% for item in sequence %}-->
+<!--            <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--                <span>{{ item.command }}</span>-->
+<!--                <span id="count-{{ loop.index0 }}">0 / {{ item.count }}</span>-->
+<!--            </li>-->
+<!--            {% endfor %}-->
+<!--        </ul>-->
+        <h6>Current Activity: <span id="current-activity">N/A</span></h6>
+        <h6>Force: <span id="current-force">0.00</span> N</h6>
+        <h6>Range of Motion (RoM): <span id="current-rom">0</span></h6>
+        <h6>Current Count: <span id="current-count">0</span></h6>
+        <h6>Total Activities: <span id="total-activities">0</span></h6>
+        <h6>Remaining Cycles: <span id="remaining-cycles">0</span></h6>
     </div>
 </div>
 
@@ -48,6 +76,116 @@
         const progressItem = document.querySelector(`#progress-list li:contains('${data.activity}') span:last-child`);
         if (progressItem) {
             progressItem.textContent = `${data.count} / ${progressItem.textContent.split('/')[1].trim()}`;
+        }
+    });
+</script>
+<script>
+    const portSelector = document.getElementById('port-selector');
+    const manualPortInput = document.getElementById('manual-port');
+    const setPortButton = document.getElementById('set-port');
+    const reopenPortButton = document.getElementById('reopen-port');
+    const closePortButton = document.getElementById('close-port');
+
+    // Fetch available ports and populate the dropdown
+    fetch('/list_ports')
+        .then(response => response.json())
+        .then(data => {
+            portSelector.innerHTML = '<option value="" disabled selected>-- Select a Port --</option>';
+            data.ports.forEach(port => {
+                const option = document.createElement('option');
+                option.value = port;
+                option.textContent = port;
+                portSelector.appendChild(option);
+            });
+            manualPort = document.createElement('option')
+            manualPort.value = 'manual';
+            manualPort.textContent = 'Manual';
+            portSelector.appendChild(manualPort);
+        });
+
+    // Set the selected port
+    setPortButton.addEventListener('click', () => {
+        selectedPort = portSelector.value || manualPortInput.value;
+        if (selectedPort == 'manual') {
+            selectedPort = manualPortInput.value;
+        }
+        if (!selectedPort) {
+            alert('Please select or enter a port.');
+            return;
+        }
+
+        fetch('/set_port', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ port: selectedPort })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Port set to ${data.port}`);
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        });
+    });
+
+    // Reopen the port
+    reopenPortButton.addEventListener('click', () => {
+        fetch('/reopen_port', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            });
+    });
+
+    // Close the port
+    closePortButton.addEventListener('click', () => {
+        fetch('/close_port', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            });
+    });
+
+<!--    const portSelector = document.getElementById('port-selector');-->
+    const manualPortContainer = document.getElementById('manual-port-container');
+
+    // Show or hide the manual input field based on the selected option
+    portSelector.addEventListener('change', () => {
+        if (portSelector.value === 'manual') {
+            manualPortContainer.style.display = 'block';
+        } else {
+            manualPortContainer.style.display = 'none';
+        }
+    });
+</script>
+<script>
+    socket.on('update_progress', data => {
+        if (data.activity) {
+            document.getElementById('current-activity').textContent = data.activity;
+        }
+        if (data.force !== undefined) {
+            document.getElementById('current-force').textContent = data.force.toFixed(2);
+        }
+        if (data.rom !== undefined) {
+            document.getElementById('current-rom').textContent = data.rom;
+        }
+        if (data.current_count !== undefined) {
+            document.getElementById('current-count').textContent = data.current_count;
+        }
+        if (data.total_cycles !== undefined) {
+            document.getElementById('total-activities').textContent = data.total_cycles;
+        }
+        if (data.remaining_cycles !== undefined) {
+            document.getElementById('remaining-cycles').textContent = data.remaining_cycles;
         }
     });
 </script>
