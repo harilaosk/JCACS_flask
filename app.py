@@ -5,6 +5,9 @@ import time
 import json
 import os
 import csv
+import serial.tools.list_ports
+
+
 
 # File paths for caching
 CACHE_FILE = 'cache.json'
@@ -328,6 +331,47 @@ def start_run():
                         break
     emit('log', {'message': 'Sequence completed'})
 
+# Check for available serial ports
+@app.route('/list_ports', methods=['GET'])
+def list_ports():
+    """List available COM ports."""
+    ports = [port.device for port in serial.tools.list_ports.comports()]
+    return jsonify({"ports": ports})
+
+@app.route('/set_port', methods=['POST'])
+def set_port():
+    """Set the selected COM port."""
+    global SERIAL_PORT, arduino
+    port = request.json.get('port')
+    if port:
+        SERIAL_PORT = port
+        if arduino and arduino.is_open:
+            arduino.close()  # Close the current port
+        return jsonify({"success": True, "port": SERIAL_PORT})
+    return jsonify({"success": False, "error": "Invalid port"}), 400
+
+@app.route('/reopen_port', methods=['POST'])
+def reopen_port():
+    """Reopen the selected COM port."""
+    global arduino
+    try:
+        connect_to_arduino()
+        if arduino and arduino.is_open:
+            return jsonify({"success": True, "message": f"Port {SERIAL_PORT} reopened successfully"})
+        return jsonify({"success": False, "error": "Failed to open port"})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/close_port', methods=['POST'])
+def close_port():
+    """Close the current COM port."""
+    global arduino
+    if arduino and arduino.is_open:
+        arduino.close()
+        return jsonify({"success": True, "message": f"Port {SERIAL_PORT} closed successfully"})
+    return jsonify({"success": False, "error": "Port is not open"})
+
+###
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
