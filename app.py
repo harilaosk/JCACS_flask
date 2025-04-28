@@ -418,6 +418,14 @@ def close_port():
 #         return jsonify({"success": False, "error": "Log file not found"}), 404
 #     except Exception as e:
 #         return jsonify({"success": False, "error": str(e)}), 500
+@app.route('/send_command', methods=['POST'])
+def send_serial_command():
+    """Send a serial command to the Arduino."""
+    command = request.json.get('command')
+    if command:
+        response = send_command(command)
+        return jsonify({"success": True, "response": response})
+    return jsonify({"success": False, "error": "Invalid command"}), 400
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)

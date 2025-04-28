@@ -47,7 +47,19 @@
         <h6>Remaining Cycles: <span id="remaining-cycles">0</span></h6>
     </div>
 </div>
-
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Control Commands</h5>
+    </div>
+    <div class="card-body">
+        <button id="start-run" class="btn btn-success">Run Sequence</button>
+        <button id="stop-command" class="btn btn-danger">Stop</button>
+        <button id="pause-command" class="btn btn-warning">Pause</button>
+        <button id="resume-command" class="btn btn-success">Resume</button>
+        <button id="move-up-command" class="btn btn-primary">Move Up</button>
+        <button id="move-down-command" class="btn btn-secondary">Move Down</button>
+    </div>
+</div>
 <div class="card">
     <div class="card-header">
         <h5>Arduino Log</h5>
@@ -61,7 +73,6 @@
     </div>
 </div>
 
-<button id="start-run" class="btn btn-success mt-3">Start Run</button>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
@@ -214,5 +225,28 @@
         a.click();
         URL.revokeObjectURL(url); // Clean up the URL object
     });
+</script>
+<script>
+    const sendCommand = (command) => {
+        fetch('/send_command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Command "${command}" sent successfully.`);
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        });
+    };
+
+    document.getElementById('stop-command').addEventListener('click', () => sendCommand('stop'));
+    document.getElementById('pause-command').addEventListener('click', () => sendCommand('pause'));
+    document.getElementById('resume-command').addEventListener('click', () => sendCommand('resume'));
+    document.getElementById('move-up-command').addEventListener('click', () => sendCommand('moveUp'));
+    document.getElementById('move-down-command').addEventListener('click', () => sendCommand('moveDown'));
 </script>
 {% endblock %}
