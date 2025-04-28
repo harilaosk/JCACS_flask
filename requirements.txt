@@ -1,0 +1,6 @@
+Flask==2.2.5
+Flask-SocketIO==5.5.1
+pyserial==3.5
+python-socketio==5.13.0
+
+

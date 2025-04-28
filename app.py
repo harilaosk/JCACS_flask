@@ -353,6 +353,7 @@ def start_run():
                     rom = int(line.split(":")[1].strip())
                     emit('update_progress', {'rom': rom})
     emit('log', {'message': 'Sequence completed'})
+    send_command('stop')
 
 # Check for available serial ports
 @app.route('/list_ports', methods=['GET'])
