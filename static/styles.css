@@ -283,7 +283,28 @@ border: 0;
 
     color: var(--text-color);
 }
+.collapsible-content2 {
+    max-height: 0; /* Fully collapsed initially */
+    overflow: hidden; /* Hide content when collapsed */
+    transition: max-height 0.3s ease; /* Smooth transition */
+    margin: 0; /* Remove any default margins */
+    padding: 0; /* Remove any default padding */
+    background-color: var(--content-bg); /* Ensure the background is visible */
+    box-sizing: border-box; /* Include padding and border in width/height */
+    border-radius: 0 0 0px 0px; /* Rounded corners for the bottom */
 
+    color: var(--text-color);
+}
+.toggle-checkbox:checked ~ .collapsible-content2 {
+    max-height: none; /* Large enough to fit the content */
+    overflow: visible; /* Hide content when collapsed */
+    /*border: 6px solid var(--btn-border); /* Outer border */
+    border-top: 6px solid var(--btn-border); /* top border */
+    border-left: 6px solid var(--btn-border); /* left border */
+    border-right: 6px solid var(--btn-border); /* right border */
+    padding: 5px;
+
+}
 .toggle-checkbox:checked ~ .collapsible-content {
     max-height: none; /* Large enough to fit the content */
     overflow: visible; /* Hide content when collapsed */

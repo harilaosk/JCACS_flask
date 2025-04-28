@@ -3,11 +3,12 @@
 {% block content %}
 <h1>Run Cycles Dashboard</h1>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Arduino Port Selector</h5>
-    </div>
-    <div class="card-body">
+<div class="card shadow-sm mb-4">
+    <input type="checkbox" id="togglePortSelector" class="toggle-checkbox" hidden>
+    <label for="togglePortSelector" class="card-header bg" style="cursor: pointer;">
+        <h5 class="mb-0">Arduino Port Selector</h5>
+    </label>
+    <div class="collapsible-content card-body">
         <div class="mb-3">
             <label for="port-selector" class="form-label">Select Port</label>
             <select id="port-selector" class="form-select">
@@ -25,11 +26,12 @@
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Run Progress</h5>
-    </div>
-    <div class="card-body">
+<div class="card shadow-sm mb-4">
+    <input type="checkbox" id="toggleRunProgress" class="toggle-checkbox" hidden>
+    <label for="toggleRunProgress" class="card-header bg" style="cursor: pointer;">
+        <h5 class="mb-0">Run Progress</h5>
+    </label>
+    <div class="collapsible-content card-body">
 <!--        <ul id="progress-list" class="list-group">-->
 <!--            {% for item in sequence %}-->
 <!--            <li class="list-group-item d-flex justify-content-between align-items-center">-->
@@ -47,11 +49,12 @@
         <h6>Remaining Cycles: <span id="remaining-cycles">0</span></h6>
     </div>
 </div>
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Control Commands</h5>
-    </div>
-    <div class="card-body">
+<div class="card shadow-sm mb-4">
+    <input type="checkbox" id="toggleControlCommands" class="toggle-checkbox" hidden>
+    <label for="toggleControlCommands" class="card-header bg" style="cursor: pointer;">
+        <h5 class="mb-0">Control Commands</h5>
+    </label>
+    <div class="collapsible-content card-body">
         <button id="start-run" class="btn btn-success">Run Sequence</button>
         <button id="stop-command" class="btn btn-danger">Stop</button>
         <button id="pause-command" class="btn btn-warning">Pause</button>
@@ -60,14 +63,15 @@
         <button id="move-down-command" class="btn btn-secondary">Move Down</button>
     </div>
 </div>
-<div class="card">
-    <div class="card-header">
-        <h5>Arduino Log</h5>
+<div class="card shadow-sm">
+    <input type="checkbox" id="toggleArduinoLog" class="toggle-checkbox" hidden>
+    <label for="toggleArduinoLog" class="card-header bg" style="cursor: pointer;">
+        <h5 class="mb-0">Arduino Log</h5>
+    </label>
+    <div class="collapsible-content2 card-body">
+        <pre id="log" style="height: 300px; overflow-y: scroll;  padding: 10px;"></pre>
     </div>
-    <div class="card-body">
-        <pre id="log" style="height: 300px; overflow-y: scroll; background-color: #f8f9fa; padding: 10px;"></pre>
-    </div>
-    <div class="card-footer">
+    <div class="card-footer collapsible-content">
         <button id="clear-log" class="btn btn-warning">Clear Log</button>
         <button id="export-log" class="btn btn-secondary">Export Log</button>
     </div>
@@ -235,11 +239,14 @@
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                alert(`Command "${command}" sent successfully.`);
-            } else {
-                alert(`Error: ${data.error}`);
-            }
+<!--            if (data.success) {-->
+<!--                alert(`Command "${command}" sent successfully.`);-->
+<!--            } else {-->
+<!--                alert(`Error: ${data.error}`);-->
+<!--            }-->
+                if (data.success != true) {
+                    alert(`Error: ${data.error}`);
+                }
         });
     };
 
