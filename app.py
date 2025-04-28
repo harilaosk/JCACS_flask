@@ -426,6 +426,52 @@ def send_serial_command():
         response = send_command(command)
         return jsonify({"success": True, "response": response})
     return jsonify({"success": False, "error": "Invalid command"}), 400
+@app.route('/export_sequence', methods=['POST'])
+def export_sequence():
+    """Export the sequence as a CSV file."""
+    if not sequence:
+        return "No sequence to export", 400
+
+    # Create CSV data
+    csv_data = [["Activity Name", "Command", "Count"]]
+    for item in sequence:
+        csv_data.append([item.get('activity_name', 'N/A'), item['command'], item['count']])
+
+    # Generate CSV response
+    def generate_csv():
+        from io import StringIO
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerows(csv_data)
+        return output.getvalue()
+
+    return Response(generate_csv(), mimetype='text/csv', headers={"Content-Disposition": "attachment;filename=sequence.csv"})
+
+
+@app.route('/import_sequence', methods=['POST'])
+def import_sequence():
+    """Import a sequence from a CSV file."""
+    file = request.files.get('file')
+    if not file or not file.filename.endswith('.csv'):
+        return "Invalid file", 400
+
+    # Decode the file stream to text mode
+    file_stream = file.stream.read().decode('utf-8').splitlines()
+    csv_reader = csv.reader(file_stream)
+    next(csv_reader)  # Skip header row
+
+    global sequence
+    sequence = []  # Clear the current sequence
+    for row in csv_reader:
+        if len(row) == 3:
+            activity_name, command, count = row
+            try:
+                sequence.append({'activity_name': activity_name, 'command': command, 'count': int(count)})
+            except ValueError:
+                return "Invalid data in CSV", 400
+
+    save_cache()  # Save the imported sequence to the cache
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)

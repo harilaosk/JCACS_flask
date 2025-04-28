@@ -183,9 +183,38 @@
     }
 </script>
 
-
+<div class="d-flex justify-content-center mt-4">
     <form method="POST" action="/run_sequence" class="mb-3">
 <!--        <button type="submit" class="btn btn-success">Run Sequence</button>-->
-        <button type="submit" formaction="/clear_sequence" class="btn btn-warning">Clear Sequence</button>
+        <button type="submit" formaction="/clear_sequence" class="btn btn-warning me-2">Clear Sequence</button>
     </form>
+    <!-- Export Sequence Button -->
+    <form method="POST" action="/export_sequence" class="d-inline">
+        <button type="submit" class="btn btn-success me-2">Export Sequence</button>
+    </form>
+
+    <!-- Import Sequence Button -->
+    <form method="POST" action="/import_sequence" enctype="multipart/form-data" class="d-inline">
+        <input type="file" name="file" accept=".csv" class="d-none" id="sequenceFileInput" required onchange="updateSequenceFileName(this)">
+        <button type="button" class="btn btn-primary me-2" onclick="triggerSequenceFileSelection()">Import Sequence</button>
+        <span id="sequenceFileName"></span>
+    </form>
+</div>
+<script>
+    function triggerSequenceFileSelection() {
+        const fileInput = document.getElementById('sequenceFileInput');
+        fileInput.click(); // Trigger the file selection dialog
+    }
+
+    function updateSequenceFileName(input) {
+        const fileName = input.files[0] ? input.files[0].name : "No file chosen";
+        document.getElementById("sequenceFileName").textContent = fileName;
+
+        // Automatically submit the form if a file is selected
+        if (input.files[0]) {
+            input.form.submit();
+        }
+    }
+</script>
+
 {% endblock %}
