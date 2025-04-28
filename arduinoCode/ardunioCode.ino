@@ -79,7 +79,7 @@ const int debug = 0; //0=false, 1 = true
 void setup() {
   Serial.begin(115200);
   Serial.println("Serial begin");
-  if (debug == 0) {
+  if ((debug == 1)||(debug == 0)) {
     // Setup microstepping pins for 1/8 microstepping
     Serial.println(" debug false ");
     pinMode(MS1_PIN, OUTPUT);
@@ -115,7 +115,7 @@ void setup() {
 }
 
 void loop() {
-  
+
   // Buffer to store incoming serial data
   static char inputBuffer[100];
   static byte bufferIndex = 0;
@@ -166,14 +166,14 @@ void loop() {
   // static bool HoldingMin = false;
   // static bool RomUp = false;
   // static bool RomDown = false;
-  
+
   // Create stepper position variables
   static long stepper1Position = 0;
   static long stepper2Position = 0;
   static float currentForce = 0.0;
   static long minForcePos1 = 0;
   static long minForcePos2 = 0;
-  static long maxForcePos1 = 0; 
+  static long maxForcePos1 = 0;
   static long maxForcePos2 = 0;
 
   if ((findingMinForce) || (findingMaxForce) || (returntoMinForce)) {
@@ -182,9 +182,9 @@ void loop() {
       // find minimum force location
       if (findingMinForce) {
         stepper1.move(1);
-        stepper2.move(-1);
+        stepper2.move(1);
         stepper1Position += 1;
-        stepper2Position -= 1; //ATTENTION positive? ***********************************************
+        stepper2Position += 1; //ATTENTION positive? ***********************************************
         currentForce = -loadCell.get_units();
         Serial.print("Current force: ");
         Serial.print(currentForce);
@@ -206,9 +206,9 @@ void loop() {
       // Find maximum force location
       else if (findingMaxForce){
         stepper1.move(1);
-        stepper2.move(-1);
+        stepper2.move(1);
         stepper1Position += 1;
-        stepper2Position -= 1; //ATTENTION positive? ***********************************************
+        stepper2Position += 1; //ATTENTION positive? ***********************************************
         currentForce = -loadCell.get_units();
         Serial.print("Current force: ");
         Serial.print(currentForce);
@@ -245,9 +245,9 @@ void loop() {
         if (currentForce >= MIN_TARGET_FORCE){
           while (currentForce >= MIN_TARGET_FORCE){
             stepper1.move(-1);
-            stepper2.move(1);//ATTENTION negative? ***********************************************
+            stepper2.move(-1);//ATTENTION negative? ***********************************************
             minForcePos1 -= 1;
-            minForcePos2 += 1;//ATTENTION negative? ***********************************************
+            minForcePos2 -= 1;//ATTENTION negative? ***********************************************
             currentForce = -loadCell.get_units();
           }
           Serial.print("Returned to min force: ");
@@ -255,13 +255,13 @@ void loop() {
           returntoMinForce = false;
           RomUp = true;
         }
-        
+
         else if (currentForce <= MIN_TARGET_FORCE){
           while (currentForce <= MIN_TARGET_FORCE){
             stepper1.move(1);
-            stepper2.move(-1);//ATTENTION positive? ***********************************************
+            stepper2.move(1);//ATTENTION positive? ***********************************************
             minForcePos1 += 1;
-            minForcePos2 -= 1;//ATTENTION positive? ***********************************************
+            minForcePos2 += 1;//ATTENTION positive? ***********************************************
             currentForce = -loadCell.get_units();
           }
           Serial.print("Returned to min force: ");
@@ -292,16 +292,16 @@ void loop() {
   if (RampingUp){
     if (debug == 0) {
       stepper1.moveTo(maxForcePos1 - 5);
-      stepper2.moveTo(maxForcePos2 + 5);
+      stepper2.moveTo(maxForcePos2 - 5);
       while (stepper1.moving() || stepper2.moving());
       currentForce = -loadCell.get_units();
 
       if (currentForce >= MAX_TARGET_FORCE){
         while (currentForce >= MAX_TARGET_FORCE){
           stepper1.move(-1);
-          stepper2.move(1);//ATTENTION negative? ***********************************************
+          stepper2.move(-1);//ATTENTION negative? ***********************************************
           maxForcePos1 -= 1;
-          maxForcePos2 += 1;//ATTENTION negative? ***********************************************
+          maxForcePos2 -= 1;//ATTENTION negative? ***********************************************
           currentForce = -loadCell.get_units();
         }
         Serial.print("Max force during ramp up: ");
@@ -315,9 +315,9 @@ void loop() {
       else if (currentForce <= MAX_TARGET_FORCE){
         while (currentForce <= MAX_TARGET_FORCE){
           stepper1.move(1);
-          stepper2.move(-1);//ATTENTION positve? ***********************************************
+          stepper2.move(1);//ATTENTION positve? ***********************************************
           maxForcePos1 += 1;
-          maxForcePos2 -= 1;//ATTENTION positve? ***********************************************
+          maxForcePos2 += 1;//ATTENTION positve? ***********************************************
           currentForce = -loadCell.get_units();
         }
         Serial.print("Max force during ramp up: ");
@@ -353,16 +353,16 @@ void loop() {
   if (RampingDown){
     if (debug == 0) {
       stepper1.moveTo(minForcePos1 + 5);
-      stepper2.moveTo(minForcePos2 - 5);
+      stepper2.moveTo(minForcePos2 + 5);
       while (stepper1.moving() || stepper2.moving());
       currentForce = -loadCell.get_units();
 
       if (currentForce >= MIN_TARGET_FORCE){
         while (currentForce >= MIN_TARGET_FORCE){
           stepper1.move(-1);
-          stepper2.move(1);//ATTENTION negative? ***********************************************
+          stepper2.move(-1);//ATTENTION negative? ***********************************************
           minForcePos1 -= 1;
-          minForcePos2 += 1;//ATTENTION negative? ***********************************************
+          minForcePos2 -= 1;//ATTENTION negative? ***********************************************
           currentForce = -loadCell.get_units();
         }
         Serial.print("Min force during ramp down: ");
@@ -372,13 +372,13 @@ void loop() {
         RampingDown = false;
         HoldingMin = true;
       }
-      
+
       else if (currentForce <= MIN_TARGET_FORCE){
         while (currentForce <= MIN_TARGET_FORCE){
           stepper1.move(1);
-          stepper2.move(-1);//ATTENTION positve? ***********************************************
+          stepper2.move(1);//ATTENTION positve? ***********************************************
           minForcePos1 += 1;
-          minForcePos2 -= 1;//ATTENTION positve? ***********************************************
+          minForcePos2 += 1;//ATTENTION positve? ***********************************************
           currentForce = -loadCell.get_units();
         }
         Serial.print("Min force during ramp down: ");
@@ -438,7 +438,7 @@ void processInput(const char* input) {
   // Process the received string
   Serial.print("Received: ");
   Serial.println(input);
-  
+
   // String wordIn = "NeW";
 
   // // sscanf(input, "%s", &wordIn);
@@ -515,9 +515,9 @@ void processInput(const char* input) {
     RomUp = false;
     RomDown = false;
 
-    stepper1.move(-50);
-    stepper2.move(50);
-    Serial.println("movedUp 50");
+    stepper1.move(-400);
+    stepper2.move(-400);
+    Serial.println("movedUp 400");
     wordCOMMAND = true;
   } else if (myString.equals("moveDown")) {
     findingMinForce = false;
@@ -536,13 +536,15 @@ void processInput(const char* input) {
         Serial.print("move Down Attempted, Force: ");
         Serial.println(currentForce);
       } else {
-        stepper1.move(50);
-        stepper2.move(-50);
-      Serial.println("movedDown 50");
+        stepper1.move(400);
+        stepper2.move(400);
+      Serial.println("movedDown 400");
       }
     }
     if (debug == 1) {
-      Serial.println("movedDown 50");
+      stepper1.move(400);
+      stepper2.move(400);
+      Serial.println("movedDown 400");
     }
     wordCOMMAND = true;
   } else if (wordCOMMAND != true) {
