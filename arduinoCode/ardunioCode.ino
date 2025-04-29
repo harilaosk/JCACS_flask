@@ -115,57 +115,7 @@ void setup() {
 }
 
 void loop() {
-
-  // Buffer to store incoming serial data
-  static char inputBuffer[100];
-  static byte bufferIndex = 0;
-
-  // Check if data is available on the serial port
-  while (Serial.available() > 0) {
-    char incomingByte = Serial.read();
-
-    // Check for end of line character
-    if (incomingByte == '\n') {
-      inputBuffer[bufferIndex] = '\0'; // Null-terminate the string
-      if (inputBuffer[0] == '\xf0') {
-        inputBuffer [100]= inputBuffer +1;
-          if (inputBuffer[0] == '\xf0') {
-            inputBuffer [100]= inputBuffer +1;
-            if (inputBuffer[0] == '\xf0') {
-              inputBuffer [100]= inputBuffer +1;
-            }
-            else {
-              Serial.println(inputBuffer);
-            }
-          }
-          else {
-            Serial.println(inputBuffer);
-          }
-        Serial.println(inputBuffer);
-      }
-      else {
-        Serial.println(inputBuffer);
-      }
-      processInput(inputBuffer); // Process the received string
-      bufferIndex = 0; // Reset the buffer index for the next input
-      Serial.println("###");
-    } else {
-      // Store the incoming byte in the buffer
-      if (bufferIndex < sizeof(inputBuffer) - 1) {
-        inputBuffer[bufferIndex++] = incomingByte;
-      }
-    }
-  }
-  // // Initialise loop functions
-  // static bool findingMinForce = true;
-  // static bool findingMaxForce = false;
-  // static bool returntoMinForce = false;
-  // static bool RampingUp = false;
-  // static bool RampingDown = false;
-  // static bool HoldingMax = false;
-  // static bool HoldingMin = false;
-  // static bool RomUp = false;
-  // static bool RomDown = false;
+  SerChecker();
 
   // Create stepper position variables
   static long stepper1Position = 0;
@@ -189,15 +139,17 @@ void loop() {
         Serial.print("Current force: ");
         Serial.print(currentForce);
         Serial.println(" N");
-
+        SerChecker();
         if (currentForce >= MIN_TARGET_FORCE) {
           Serial.println("Target force reached. Stopping actuators.");
           Serial.print("Stepper 1 position: ");
           Serial.println(stepper1Position);
           Serial.print("Stepper 2 position: ");
           Serial.println(stepper2Position);
-          minForcePos1 = stepper1Position;
-          minForcePos2 = stepper2Position;
+          // minForcePos1 = stepper1Position;
+          // minForcePos2 = stepper2Position;
+          minForcePos1 = stepper1.readSteps();
+          minForcePos2 = stepper2.readSteps();
           findingMinForce = false;
           findingMaxForce = true;
         }
@@ -213,6 +165,7 @@ void loop() {
         Serial.print("Current force: ");
         Serial.print(currentForce);
         Serial.println(" N");
+        SerChecker();
 
         if (currentForce >= MAX_TARGET_FORCE) {
           Serial.println("Target force of reached. Stopping actuators.");
@@ -220,8 +173,10 @@ void loop() {
           Serial.println(stepper1Position);
           Serial.print("Stepper 2 position: ");
           Serial.println(stepper2Position);
-          maxForcePos1 = stepper1Position;
-          maxForcePos2 = stepper2Position;
+          // maxForcePos1 = stepper1Position;
+          // maxForcePos2 = stepper2Position;
+          maxForcePos1 = stepper1.readSteps();
+          maxForcePos2 = stepper2.readSteps();
           findingMaxForce = false;
           returntoMinForce = true;
         }
@@ -241,6 +196,7 @@ void loop() {
         stepper2.moveTo(minForcePos2);
         while (stepper1.moving() || stepper2.moving());
         currentForce = -loadCell.get_units();
+        SerChecker();
 
         if (currentForce >= MIN_TARGET_FORCE){
           while (currentForce >= MIN_TARGET_FORCE){
@@ -276,6 +232,7 @@ void loop() {
       Serial.println("debug true");
     }
   }
+  SerChecker();
   // Rotate the joint the required angle
   if (RomUp) {
     if (debug == 0) {
@@ -287,7 +244,7 @@ void loop() {
     RomUp = false;
     RampingUp = true;
   }
-
+  SerChecker();
   // Increase the force to the set level
   if (RampingUp){
     if (debug == 0) {
@@ -338,7 +295,7 @@ void loop() {
       HoldingMax = true;
     }
   }
-
+  SerChecker();
   // Hold at Max Force
   if (HoldingMax){
     Serial.print("HoldingStart: ");
@@ -348,7 +305,7 @@ void loop() {
     HoldingMax = false;
     RampingDown = true;
   }
-
+  SerChecker();
   // Reduce the force to the min set level
   if (RampingDown){
     if (debug == 0) {
@@ -399,7 +356,7 @@ void loop() {
       RomDown = true;
     }
   }
-
+  SerChecker();
   // Rotate the joint back to initial angle
   if (RomDown) {
     if (debug == 0) {
@@ -411,7 +368,7 @@ void loop() {
     RomDown = false;
     HoldingMin = true;
   }
-
+  SerChecker();
   // Hold at angle and min force for set time
   if (HoldingMin){
     Serial.print("HoldingStart: ");
@@ -569,7 +526,7 @@ void processInput(const char* input) {
     HOLD_TIME_MAX = floatValue4;
     StartAngle = intValue1;
     EndAngle = intValue2;
-    
+
     // Print updated values for verification
     Serial.println("###");
     Serial.print("MIN_TARGET_FORCE: ");
@@ -586,4 +543,46 @@ void processInput(const char* input) {
     Serial.println(EndAngle);
   }
   wordCOMMAND = false;
+}
+
+void SerChecker() {
+  // Buffer to store incoming serial data
+  static char inputBuffer[100];
+  static byte bufferIndex = 0;
+  // Check if data is available on the serial port
+  while (Serial.available() > 0) {
+    char incomingByte = Serial.read();
+
+    // Check for end of line character
+    if (incomingByte == '\n') {
+      inputBuffer[bufferIndex] = '\0'; // Null-terminate the string
+      if (inputBuffer[0] == '\xf0') {
+        inputBuffer [100]= inputBuffer +1;
+          if (inputBuffer[0] == '\xf0') {
+            inputBuffer [100]= inputBuffer +1;
+            if (inputBuffer[0] == '\xf0') {
+              inputBuffer [100]= inputBuffer +1;
+            }
+            else {
+              Serial.println(inputBuffer);
+            }
+          }
+          else {
+            Serial.println(inputBuffer);
+          }
+        Serial.println(inputBuffer);
+      }
+      else {
+        Serial.println(inputBuffer);
+      }
+      processInput(inputBuffer); // Process the received string
+      bufferIndex = 0; // Reset the buffer index for the next input
+      Serial.println("###");
+    } else {
+      // Store the incoming byte in the buffer
+      if (bufferIndex < sizeof(inputBuffer) - 1) {
+        inputBuffer[bufferIndex++] = incomingByte;
+      }
+    }
+  }
 }
