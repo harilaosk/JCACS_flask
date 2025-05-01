@@ -241,7 +241,7 @@ void loop() {
       stepper3.moving(); // try changing/was to/was while (stepper3.moving())
     }
     Serial.print("RoM up: ");
-    Serial.println(EndAngle); //was Serial.println("EndAngle");
+    Serial.println(EndAngle * 360/200); //was Serial.println("EndAngle");
     RomUp = false;
     RampingUp = true;
   }
@@ -365,7 +365,7 @@ void loop() {
       stepper3.moving();// was while (stepper3.moving());
     }
     Serial.print("RoM down: ");
-    Serial.println(StartAngle);
+    Serial.println(StartAngle* 360/200);
     RomDown = false;
     HoldingMin = true;
   }
@@ -525,8 +525,8 @@ void processInput(const char* input) {
     MAX_TARGET_FORCE = floatValue2;
     HOLD_TIME_MIN = floatValue3;
     HOLD_TIME_MAX = floatValue4;
-    StartAngle = intValue1;
-    EndAngle = intValue2;
+    StartAngle = intValue1 * 200/360;
+    EndAngle = intValue2 * 200/360;
 
     // Print updated values for verification
     Serial.println("###");
@@ -539,9 +539,9 @@ void processInput(const char* input) {
     Serial.print("HOLD_TIME_MAX: ");
     Serial.println(HOLD_TIME_MAX);
     Serial.print("StartAngle: ");
-    Serial.println(StartAngle);
+    Serial.println(StartAngle * 360/200);
     Serial.print("EndAngle: ");
-    Serial.println(EndAngle);
+    Serial.println(EndAngle * 360/200);
   }
   wordCOMMAND = false;
 }
