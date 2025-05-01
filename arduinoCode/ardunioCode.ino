@@ -60,11 +60,11 @@ static bool wordCOMMAND = false;
 
 // RoM in steps: 200 steps = 360deg
 int StartAngle = 0;
-int EndAngle = 50;
+int EndAngle = 25;
 
 int cycle_count = 0;
 
-const int debug = 0; //0=false, 1 = true
+const int debug = 0; //0=false, 1 = true ## IF debug with motors change #DEBUGMOTORS
 
 // #####################################################################################################
 // if (debug == 0) {
@@ -74,12 +74,13 @@ const int debug = 0; //0=false, 1 = true
   // Create Motor instances
   MoToStepper stepper1(1600 , STEPDIR);
   MoToStepper stepper2(1600 , STEPDIR);
-  MoToStepper stepper3(800 , STEPDIR); // RoM motor
+  MoToStepper stepper3(200 , STEPDIR); // RoM motor
 // }
 void setup() {
   Serial.begin(115200);
   Serial.println("Serial begin");
-  if ((debug == 1)||(debug == 0)) {
+  // if ((debug == 1)||(debug == 0)) { //for debug when connected to motors #DEBUGMOTORS
+  if (debug == 0) { //for debug when not connected to motors #DEBUGMOTORS
     // Setup microstepping pins for 1/8 microstepping
     Serial.println(" debug false ");
     pinMode(MS1_PIN, OUTPUT);
@@ -327,7 +328,7 @@ void loop() {
         Serial.print("Target force: ");
         Serial.println(MIN_TARGET_FORCE);
         RampingDown = false;
-        HoldingMin = true;
+        RomDown = true;
       }
 
       else if (currentForce <= MIN_TARGET_FORCE){
@@ -343,7 +344,7 @@ void loop() {
         Serial.print("Target force: ");
         Serial.println(MIN_TARGET_FORCE);
         RampingDown = false;
-        HoldingMin = true;
+        RomDown = true;
       }
     }
     if (debug == 1) {
