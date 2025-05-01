@@ -31,3 +31,8 @@ The UI has been designed to be intuitive to use. Please see below for the
 
 ## Future Work
 Any future work should take in mind user feedback and requested feature improvements.
+
+![image](https://github.com/user-attachments/assets/936b4769-3950-4c67-9d1a-dcb22a505a0a)
+![image](https://github.com/user-attachments/assets/ae596d2b-6258-4ea4-9562-829d53a281b7)
+![image](https://github.com/user-attachments/assets/1d9250a4-aa71-4dc8-9b0f-2cb38f5ea7e4)
+
